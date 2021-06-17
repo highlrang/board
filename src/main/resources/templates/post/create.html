@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="/js/index.js"></script>
+</head>
+<body>
+    <script>
+        $(document).ready(function(){
+            if($('#isPublic').prop('checked')){
+                $('#isPublic').val(true);
+            }else{
+                $('#isPublic').val(false);
+            }
+            console.log($('#isPublic').val());
+        });
+    </script>
+    <form>
+        <div></div><input type="text" id="title"/></div>
+        <div><textarea id="content"></textarea></div>
+        <div>공개 여부 <input type="checkbox" id="isPublic" checked></div>
+        <!-- th:checked -->
+
+
+        <input type="hidden" id="userId" th:value="${userId}"/>
+        <input type="hidden" id="categoryId" th:value="${cateId}"/>
+        <input type="button" id="post-save" value="게시글 저장"/>
+    </form>
+</body>
+</html>

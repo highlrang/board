@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="/js/index.js"></script>
+</head>
+<body>
+<script>
+        function goPostUpdate(id){
+            location.href="/post/update/" + id;
+        }
+
+        // 또는 document on click
+        function clickLikeList(){
+            var likes = $("#likes");
+            if(likes.css("display") == "block"){
+                likes.css("display", "none");
+            }else{
+                likes.css("display", "block");
+            }
+        }
+    </script>
+
+<span style="text-align: center">
+    <!-- ajax부를 때 form없어도됨??? -->
+    <input type="hidden" id="postId" th:value="${post.id}"/>
+    <input type="hidden" id="categoryId" th:value="${post.categoryId}"/>
+    <input type="hidden" id="userId" th:value="${post.writerId}"/>
+
+    <span style="float: left">카테고리 : </span><span th:text="${post.categoryName}"></span><br><br>
+    <span style="float: left">제목 : </span><span th:text='${post.title}'></span><br><br>
+    <span style="float: left">작성자 : </span><span th:text='${post.writerName}'></span><br><br>
+    <span th:text='${post.content}'></span><br><br>
+
+    <div style="float: left"><a th:text='|게시글 좋아요 - ${post.totalLike} 개|' href="#" onclick="clickLikeList()"></a></div><br>
+    <div id="likes" style="display:none; float:left">
+            <span th:each="like : ${post.likes}">
+                <div th:text="${like.userName}"></div>
+            </span>
+    </div><br><br>
+
+    <div th:if='${post.isComplete == true }'>
+        <div style="float: right">해결완료</div>
+    </div>
+    <div th:if='${post.isComplete == false }'>
+        <div style="float: right">미해결 상태</div>
+    </div><br><br>
+
+    <div style="float: right">
+        <input type="button" th:onclick="'goPostUpdate('+${post.id}+')'" value="수정"/>
+        <input type="button" id="post-delete" value="삭제"/>
+    </div>
+</span>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="/js/index.js"></script>
+</head>
+<body>
+    <style>
+        .unliked{
+            border-bottom: 1px gray solid;
+            color : gray;
+            background-color: white;
+        }
+
+        .liking{
+            border: none;
+            border-bottom: 1px red solid;
+            color : red;
+            background-color: white;
+        }
+    </style>
+    <script>
+        $(document).ready(function(){
+            var al = $("#alreadyLiked").val();
+            var like = $("#like-push");
+            if (al == "true"){
+                like.attr('class', 'liking');
+            }else{
+                like.attr('class', 'unliked');
+            }
+        });
+
+        $(document).on('click', '#like-push', function(){
+            var like = $('#like-push');
+            if(like.attr('class') == 'unliked'){
+                like.attr('class', 'liking');
+            }else{
+                like.attr('class', 'unliked');
+            }
+        });
+
+        function clickLikeList(){
+            var likes = $("#likes");
+            if(likes.css("display") == "block"){
+                likes.css("display", "none");
+            }else{
+                likes.css("display", "block");
+            }
+        }
+    </script>
+
+    <div style="text-align: center;">
+        <!-- ajax부를 때 form없어도됨-->
+        <input type="hidden" id="postId" th:value="${post.id}"/>
+        <input type="hidden" id="categoryId" th:value="${post.categoryId}"/>
+        <input type="hidden" id="writerId" th:value="${post.writerId}"/>
+        <input type="hidden" id="userId" th:value="${userId}"/>
+        <input type="hidden" id="alreadyLiked" th:value="${alreadyLiked}"/>
+
+        <span style="float: left">카테고리 : </span><span th:text="${post.categoryName}"></span><br><br>
+        <span style="float: left">제목 : </span><span th:text='${post.title}'></span><br><br>
+        <span style="float: left">작성자 : </span><span th:text='${post.writerName}'></span><br><br>
+        <span th:text='${post.content}'></span><br><br>
+
+        <div style="float: left"><a th:text='|게시글 좋아요 - ${post.totalLike} 개|' href="#" onclick="clickLikeList()"></a></div><br>
+        <div id="likes" style="display:none; float: left">
+            <span th:each="like : ${post.likes}">
+                <div th:text="${like.userName}"></div>
+            </span>
+        </div><br><br>
+
+        <div th:if='${post.isComplete == true }'>
+            <div style="float: right">해결완료</div>
+        </div>
+        <div th:if='${post.isComplete == false }'>
+            <div style="float: right">미해결 상태</div>
+        </div><br><br>
+
+        <div style="float: right"><input type="button" id="like-push" value="좋아요" class="unliked"/></div>
+    </div>
+</body>
+</html>

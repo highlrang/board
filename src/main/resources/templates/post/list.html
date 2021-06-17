@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="/js/index.js"></script>
+</head>
+<body>
+<script>
+    $(document).ready(function(){
+        $('#post-best').click();
+        $('#post-list').click();
+    });
+
+    $(document).on('click', '#post-mylist', function(){
+        $('#myPost').css('display', 'none');
+        $('#allPost').css('display', 'block');
+
+        $('#myTable').css('display', 'block');
+        $('#allTable').css('display', 'none');
+
+    });
+
+    $(document).on('click', '#post-list', function(){
+        $('#allPost').css('display', 'none');
+        $('#myPost').css('display', 'block');
+
+        $('#allTable').css('display', 'block');
+        $('#myTable').css('display', 'none');
+
+    });
+
+    $(document).on('click', "input[name='page']", function(){
+        var page = $(this).val() - 1;
+        $('#offset').val(page*10);
+        $('#post-list').click();
+    });
+
+    function goDetail(id){
+        location.href='/post/detail/' + id;
+
+    }
+
+    function goMyDetail(id){
+        location.href='/post/detail/mine/' + id;
+
+    }
+</script>
+<br><br>
+<div>
+    <div><a th:href="@{/post/create(cateId=${cateId})}">게시글 생성</a></div><br><br>
+
+    <form><!-- 필요없는듯?? -->
+        <input type="hidden" th:value="${userId}" id="userId"/>
+        <input type="hidden" th:value="${cateId}" id="cateId"/>
+        <input type="hidden" id="offset" value="0"/>
+        <input type="hidden" id="limit"/>
+
+
+        <span style="display: none">
+            <input type="button" id="post-best"/>
+        </span>
+
+        <span id="myPost" style="display: block">
+            <input type="button" id="post-mylist" value="나의 게시글 조회"/>
+        </span>
+        <span id="allPost" style="display: none">
+            <input type="button" id="post-list" value="전체 게시글 조회"/>
+        </span>
+
+    </form><br><br>
+
+    <div>
+        <span id="bestTable"></span><br><br><br>
+        <span id="myTable" style="display: none"></span>
+        <span id="allTable" style="display: none"></span>
+    </div>
+
+</div>
+</body>
+</html>

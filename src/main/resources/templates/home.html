@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    안녕하세요. Hello, Spring!
+    <br>
+    <span th:if="${user==null}"> <!--#strings.isEmpty(examData)-->
+    <input type="button" onclick="location.href='login'" value="로그인"/>
+
+    <input type="button" onclick="location.href='register'" value="회원가입"/>
+    </span>
+
+
+    <span th:if="${user!=null}">
+
+        <div th:object="${user}">
+            <div th:text="*{email}"></div>
+            <div th:text="*{name}"></div>
+        </div>
+
+        <div>
+            <div><a th:href="@{/category/list}">카테고리 목록</a></div>
+            <div><a th:href="@{/logout}">로그아웃</a></div>
+        </div>
+
+
+        <!--
+        <span th:text="${user.username}"></span>
+
+        <span th:each="u : ${user}">
+        <div>
+            <span th:text="${u.userName}"></span>
+        </div>
+        </span>
+
+        href="@{/{id} (id=${item.id})}"
+        -->
+
+    </span>
+</body>
+</html>
