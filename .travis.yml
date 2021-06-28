@@ -17,6 +17,25 @@ script: "./gradlew clean build"
 before_install:
   - chmod +x gradlew
 
+
+
+before_deploy:
+  - zip -r board-springboot-webservice *
+  - mkdir -p deploy
+  - mv board-springboot-webservice.zip deploy/board-springboot-webservice.zip
+
+deploy:
+  - provider: s3
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
+    bucket: board-build-storage
+    region: ap-northeast-2
+    skip_cleanup: true
+    acl: private
+    local_dir: deploy
+    wait-until-deployed: true
+
+
 # CI 실행 완료 시 메일로 알람
 notifications:
   email:
