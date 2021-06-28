@@ -20,7 +20,7 @@ before_install:
 
 
 before_deploy:
-  - zip -r board-springboot-webservice restapi
+  - zip -r board-springboot-webservice board-springboot-webservice
   - mkdir -p deploy
   - mv board-springboot-webservice.zip deploy/board-springboot-webservice.zip
 
