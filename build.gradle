@@ -36,7 +36,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     // compile('org.springframework.boot:spring-boot-starter-jdbc')
     // compile('com.h2database:h2') // 인메모리 테스트용 db
-    implementation 'mysql:mysql-connector-java'
+    // implementation 'mysql:mysql-connector-java'
     implementation 'org.mariadb.jdbc:mariadb-java-client'
 
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
