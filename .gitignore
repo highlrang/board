@@ -4,3 +4,6 @@
 /out/
 /out/production/classes/
 /out/test/classes/
+
+/src/main/resources/application.properties
+/src/main/resources/application-git.properties
