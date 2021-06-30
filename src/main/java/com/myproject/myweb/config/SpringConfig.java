@@ -54,8 +54,9 @@ public class SpringConfig{
         return new BCryptPasswordEncoder();
     }
 
-    @Bean // 자동 등록되는 듯
+    /*@Bean // 자동 등록
     public UserService userService(){ return new UserService(userRepository, passwordEncoder()); }
+    */
 
     @Bean
     public CategoryService categoryService(){
