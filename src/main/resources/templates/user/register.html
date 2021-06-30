@@ -10,21 +10,21 @@
 
       <div>
         <input type="text" placeholder="이메일" name="email"/>
-        <span th:if="#fields.hasErrors('email')">
+        <span th:if="${#fields.hasErrors('email')}">
           <span th:errors="*{email}"></span>
         </span>
       </div>
 
       <div>
         <input type="password" placeholder="비밀번호" name="password"/>
-        <span th:if="#fields.hasErrors('password')">
+        <span th:if="${#fields.hasErrors('password')}">
             <span th:errors="*{password}"></span>
         </span>
       </div>
 
       <div>
         <input type="text" placeholder="닉네임" name="userName"/>
-        <span th:if="#fields.hasErrors('userName')">
+        <span th:if="${#fields.hasErrors('userName')}">
           <span th:errors="*{userName}"></span>
         </span>
       </div>
