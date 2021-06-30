@@ -17,12 +17,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Bean // 로그인 시
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
+    @Autowired
+    private final BCryptPasswordEncoder passwordEncoder;
+    // @Bean
+    // public PasswordEncoder passwordEncoder(){
+    //    return new BCryptPasswordEncoder();
+    //}
 
     @Override
     public void configure(WebSecurity web){
@@ -54,7 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception{
-        auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(userService).passwordEncoder(passwordEncoder);
         // new BCryptPasswordEncoder());
     }
 
