@@ -19,7 +19,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)                // Mock 객체 사용해보기 !!
+@RunWith(SpringRunner.class)
 @SpringBootTest
 @Transactional
 @Slf4j
@@ -30,12 +30,12 @@ public class PostRepositoryTest {
     @Autowired UserRepository userRepository;
     @Autowired CategoryRepository categoryRepository;
 
-    @Test @Commit
+    @Test
     public void 게시글_저장(){
         User writer = userRepository.findByEmail("jhw127@naver.com").get();
         Category category = categoryRepository.findByName("테스트 카테고리").get();
-        String title = "2번째 페이지의 첫 게시글";
-        String content = "페이지 테스트";
+        String title = "test";
+        String content = "test";
         Boolean isPublic = true;
 
         Post entity = Post.builder()
@@ -52,17 +52,13 @@ public class PostRepositoryTest {
         Post post = postRepository.findById(id).get();
 
         assertThat(post.getTitle()).isEqualTo(title);
-        // assertThat(category.getPostList().get(0)).isEqualTo(post);
-        // assertThat(writer.getPostList().get(0).getTitle()).isEqualTo(title);
     }
 
     @Test
     public void 게시글_수정(){
-        List<Post> postList = postRepository.findAll();
-        Post post = postList.get(0);
+        Post post = postRepository.findAll().get(0);
         Long id = post.getId();
 
-        // Post post = postRepository.findById().get();
         String content = "내용 수정 테스트";
         Boolean isPublic = !post.getIsPublic();
         post.update(post.getTitle(), content, isPublic);

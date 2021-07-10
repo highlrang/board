@@ -8,7 +8,7 @@ import com.myproject.myweb.repository.post.PostRepository;
 import com.myproject.myweb.repository.user.UserRepository;
 import com.myproject.myweb.dto.post.PostRequestDto;
 import com.myproject.myweb.dto.post.PostResponseDto;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -31,27 +31,22 @@ public class LikeRepositoryTest {
 
     @Test
     public void query(){
-        List<Like> likes = likeRepository.findAllByUser_Id(Long.valueOf(10));
-        for(Like l :likes){
-            System.out.println("회원 " + l.getUser().getName());
-        }
-        System.out.println(likes.size());
+
     }
 
-    @Test @Commit
+    @Test
     public void 좋아요(){
-        User user = userRepository.findByEmail("jhw127@naver.com").get();
-        Post post = postRepository.findByWriter(user).get(0);
+        User user = userRepository.findByEmail("jhw123@naver.com").get();
+        Post post = postRepository.findById(Long.valueOf(14)).get(); // 운동 제목
 
-        likeRepository.save(Like.builder().post(post).user(user).build());
+        Like like = likeRepository.save(Like.builder().post(post).user(user).build());
 
-        Like like = likeRepository.findLikeOne(post.getId(), user.getId()).get();
-
+        // System.out.println(like.getUser());
         assertThat(like.getUser()).isEqualTo(user);
         assertThat(like.getPost()).isEqualTo(post);
     }
 
-    @Test @Commit
+    @Test
     public void 좋아요_취소(){
         Like like = likeRepository.findAll().get(0);
         Long id = like.getId();
@@ -63,12 +58,17 @@ public class LikeRepositoryTest {
     }
 
     @Test
-    public void 회원별_좋아요_총개수(){
+    public void 작성자별_좋아요_총개수(){
         User user = userRepository.findByEmail("jhw127@naver.com").get();
-
         Long count = likeRepository.countAllByPostWriter(user.getId()).get();
 
-        assertThat(count).isEqualTo(1);
+        List<Like> likes = likeRepository.findAll();
+        Long likesCnt = 0L;
+        for(Like l:likes){
+            if(l.getPost().getWriter().equals(user)) likesCnt += 1;
+        }
+
+        assertThat(likesCnt).isEqualTo(count);
     }
 
     @Test
@@ -77,8 +77,9 @@ public class LikeRepositoryTest {
         Post post = postRepository.findByWriter(user).get(0);
 
         Long count = likeRepository.countAllByPost_Id(post.getId()).get();
+        List<Like> likes = likeRepository.findAllByPost_Id(post.getId());
 
-        assertThat(count).isEqualTo(1);
+        assertThat(likes.size()).isEqualTo(Integer.valueOf(Math.toIntExact(count)));
 
     }
 }

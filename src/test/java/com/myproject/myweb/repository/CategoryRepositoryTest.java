@@ -3,7 +3,7 @@ package com.myproject.myweb.repository;
 import com.myproject.myweb.domain.Category;
 import com.myproject.myweb.domain.Post;
 import com.myproject.myweb.repository.post.PostRepository;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,7 +24,7 @@ public class CategoryRepositoryTest{
     @Autowired CategoryRepository categoryRepository;
     @Autowired PostRepository postRepository;
 
-    @Test @Commit
+    @Test
     public void 카테고리_생성(){
 
         String name = "테스트 카테고리";

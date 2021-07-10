@@ -6,6 +6,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,8 +26,11 @@ public class UserRepositoryTest {
     @Test
     public void 회원가입(){
 
-        String email = "jhw127@naver.com";
+        String email = "test@naver.com";
         String password = "xhxh5314";
+
+        PasswordEncoder encoder = new BCryptPasswordEncoder();
+        String encodedPassword = encoder.encode(password);
 
         userRepository.save(
                 User.builder()
@@ -36,8 +41,8 @@ public class UserRepositoryTest {
                 .build()
         );
 
-        List<User> userList = userRepository.findAll();
-        User user = userList.get(0);
+        User user = userRepository.findByEmail(email).get();
+
         assertThat(user.getEmail()).isEqualTo(email);
         assertThat(user.getPassword()).isEqualTo(password);
     }
@@ -68,7 +73,7 @@ public class UserRepositoryTest {
             System.out.println(user.getEmail());
         }
 
-        assertThat(userList.size()).isEqualTo(1);
+        
 
 
     }
