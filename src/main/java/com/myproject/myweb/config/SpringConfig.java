@@ -19,8 +19,11 @@ public class SpringConfig {
 
 import com.myproject.myweb.repository.CategoryRepository;
 import com.myproject.myweb.repository.like.LikeRepository;
+import com.myproject.myweb.repository.like.query.LikeQueryRepository;
 import com.myproject.myweb.repository.post.PostRepository;
+import com.myproject.myweb.repository.post.query.PostQueryRepository;
 import com.myproject.myweb.repository.user.UserRepository;
+import com.myproject.myweb.repository.user.query.UserQueryRepository;
 import com.myproject.myweb.service.CategoryService;
 import com.myproject.myweb.service.LikeService;
 import com.myproject.myweb.service.PostService;
@@ -29,6 +32,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import javax.persistence.EntityManager;
+import javax.swing.text.html.parser.Entity;
 
 @RequiredArgsConstructor
 @Configuration
@@ -49,14 +55,28 @@ public class SpringConfig{
     return new UserService(userRepository());
      */
 
+    private final EntityManager em;
+    @Bean
+    public UserQueryRepository userQueryRepository(){
+        return new UserQueryRepository(em);
+    }
+    @Bean
+    public PostQueryRepository postQueryRepository(){
+        return new PostQueryRepository(em);
+    }
+    @Bean
+    public LikeQueryRepository likeQueryRepository(){
+        return new LikeQueryRepository(em);
+    }
+
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
 
-    /*@Bean // 자동 등록
+    @Bean // 자동등록
     public UserService userService(){ return new UserService(userRepository, passwordEncoder()); }
-    */
 
     @Bean
     public CategoryService categoryService(){

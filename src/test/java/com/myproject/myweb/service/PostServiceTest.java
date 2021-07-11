@@ -39,7 +39,7 @@ public class PostServiceTest {
     @Autowired UserRepository userRepository;
     @Autowired CategoryRepository categoryRepository;
 
-    @Test @Commit
+    @Test
     public void 게시글_저장() {
         String title = "게시글 제목";
         String content = "게시글 내용";
@@ -76,6 +76,7 @@ public class PostServiceTest {
         PostRequestDto post = PostRequestDto.builder()
                 .categoryId(category.getId())
                 .writerId(writer.getId())
+                .title("게시글 수정 전")
                 .isPublic(isPublic)
                 .build();
         // 이후에 title 필수 인자로 지정하기
@@ -84,10 +85,9 @@ public class PostServiceTest {
 
 
         // 수정
-        Boolean isPublic2 = !isPublic;
+        Boolean isPublic2 = false;
         PostRequestDto dto = PostRequestDto.builder()
-                .title("수정")
-                .content("수정")
+                .title("수정 후")
                 .isPublic(isPublic2)
                 .build();
 
@@ -107,20 +107,25 @@ public class PostServiceTest {
     public void 게시글_삭제() { // 삭제 연관관계 메서드
 
         PostResponseDto postResponseDto = postService.findAll().get(0);
+
         Long categoryId = postResponseDto.getCategoryId();
         Category category = categoryRepository.findById(categoryId).get();
+
         Long userId = postResponseDto.getWriterId();
         User writer = userRepository.findById(userId).get();
+
         int writerSize = writer.getPostList().size();
         int postSize = category.getPostList().size();
         Long id = postResponseDto.getId();
+
+
         postService.delete(id);
 
 
         IllegalStateException e = assertThrows(IllegalStateException.class,
                 () -> postService.findById(id));
 
-        assertThat(writerSize).isEqualTo(writer.getPostList().size()+1);
+        assertThat(writerSize).isEqualTo(writer.getPostList().size()+1); // 감소
         assertThat(postSize).isEqualTo(category.getPostList().size()+1);
 
         assertThat(e.getMessage()).isEqualTo("PostNotFoundException");

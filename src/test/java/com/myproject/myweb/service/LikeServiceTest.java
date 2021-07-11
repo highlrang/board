@@ -16,7 +16,11 @@ import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -38,17 +42,17 @@ public class LikeServiceTest {
         Long userId = user.getId();
         Long postId = post.getId();
 
+        Boolean thereIs;
+        Long id = -1L;
         try {
             LikeResponseDto like = likeService.findLikeOne(postId, userId);
 
-            // id
-            // 있다는 변수
-            // 후에 id 해당하는 like 없는 거 확인
+            id = like.getId();
+            thereIs = true;
 
         }catch (IllegalStateException e) {
 
-            // 없다는 변수
-            // 후에 like 생긴 거 확인
+            thereIs = false;
 
         } finally {
 
@@ -57,11 +61,15 @@ public class LikeServiceTest {
                     .userId(user.getId())
                     .build());
 
-            // 있다는 변수면은 기존 id로 확인
-
-            // 없다는 변수면 findLike 해서 생성됐는지 보기
-
         }
+
+        if(thereIs && id != -1L){
+            assertFalse(likeRepository.findById(id).isPresent());
+        }else{
+            assertTrue(likeRepository.findLikeOne(postId, userId).isPresent());
+        }
+
+
 
     }
 

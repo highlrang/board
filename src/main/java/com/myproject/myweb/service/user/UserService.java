@@ -6,6 +6,7 @@ import com.myproject.myweb.repository.user.UserRepository;
 import com.myproject.myweb.dto.user.UserRequestDto;
 import com.myproject.myweb.dto.user.UserResponseDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UserService implements UserDetailsService {
@@ -23,6 +25,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserResponseDto loadUserByUsername(String email){
+        log.info(email);
         User entity = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("UserNotFoundException"));
 

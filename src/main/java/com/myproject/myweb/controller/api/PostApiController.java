@@ -36,7 +36,7 @@ public class PostApiController {
     private final PostQueryRepository postQueryRepository;
     private final PostService postService;
     private final LikeRepository likeRepository;
-    private final HttpSession session;
+    private HttpSession session;
 
     @GetMapping("/api/v1/posts")
     // 카테고리 상관없이 모든 게시글

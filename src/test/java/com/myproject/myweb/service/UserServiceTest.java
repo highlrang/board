@@ -75,7 +75,6 @@ public class UserServiceTest {
 
     }
 
-    // roleUpdate
     @Test
     public void role_업데이트(){
         UserResponseDto user = userService.loadUserByUsername("jhw127@naver.com");

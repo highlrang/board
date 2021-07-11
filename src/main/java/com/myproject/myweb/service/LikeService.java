@@ -51,14 +51,14 @@ public class LikeService {
     @Transactional
     public void push(LikeRequestDto likeRequestDto){
 
-        Long zero = Long.valueOf(0);
+        Long zero = 0L;
         Long id = likeRepository.findLikeOne(likeRequestDto.getPostId(), likeRequestDto.getUserId())
-                .map(l -> l.getId())
-                .orElseGet(() -> zero);
+                .map(Like::getId)
+                .orElse(zero);
 
         log.info(String.valueOf(id));
 
-        if(id != zero){
+        if(!id.equals(zero)){
             this.delete(id);
 
         }else{

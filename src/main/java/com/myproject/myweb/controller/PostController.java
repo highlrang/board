@@ -51,7 +51,7 @@ public class PostController {
         model.addAttribute("userId", user.getId());
 
         Boolean alreadyLiked = post.getLikes()
-                .stream().anyMatch(l -> l.getUserId() == user.getId());
+                .stream().anyMatch(l -> l.getUserId().equals(user.getId()));
                 // .filter(l -> l.getUserId() == user.getId())
                 // .map(l -> l.getUserId() == user.getId() ? true : false);
         model.addAttribute("alreadyLiked", alreadyLiked);
@@ -70,6 +70,8 @@ public class PostController {
     @GetMapping("/list")
     public String postList(@RequestParam("cateId") Long cateId, Model model){
         model.addAttribute("cateId", cateId);
+        postService.findAllByCategory(cateId);
+
         UserResponseDto user = (UserResponseDto)session.getAttribute("user");
         model.addAttribute("userId", user.getId());
         return "post/list";
