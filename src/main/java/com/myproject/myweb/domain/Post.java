@@ -23,7 +23,7 @@ public class Post extends BaseTimeEntity {
     private Long id;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="writer_id")// name 은 fk 이름, reference는 참조할 컬럼(기본 pk)
     private User writer;
 

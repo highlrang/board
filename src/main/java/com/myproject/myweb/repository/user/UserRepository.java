@@ -28,4 +28,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     //query 자동 생성됨 >> 쿼리 fetch join 필요한지 확인하기
     List<User> findByRole(Role role);
+
+    List<User> findByEmailContains(String email);
 }
