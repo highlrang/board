@@ -12,6 +12,7 @@ import com.myproject.myweb.dto.post.PostResponseDto;
 import com.myproject.myweb.repository.CategoryRepository;
 import com.myproject.myweb.repository.like.LikeRepository;
 import com.myproject.myweb.repository.post.PostRepository;
+import com.myproject.myweb.repository.post.query.PostQueryRepository;
 import com.myproject.myweb.repository.user.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +30,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,15 +42,17 @@ import static org.mockito.Mockito.*;
 public class PostServiceMockUnitTest {
 
     @Mock private PostRepository postRepository;
+    @Mock private PostQueryRepository postQueryRepository;
     @Mock private UserRepository userRepository;
     @Mock private CategoryRepository categoryRepository;
     @Mock private LikeRepository likeRepository;
+    @Mock private RestTemplate restTemplate;
     @InjectMocks private PostService postService;
 
     @Before
     public void init(){
         MockitoAnnotations.initMocks(this);
-        postService = new PostService(postRepository, categoryRepository, userRepository, likeRepository);
+        postService = new PostService(postRepository, postQueryRepository, categoryRepository, userRepository, likeRepository, restTemplate);
     }
 
     @Test

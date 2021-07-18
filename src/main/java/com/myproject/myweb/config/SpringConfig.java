@@ -32,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.EntityManager;
 import javax.swing.text.html.parser.Entity;
@@ -84,8 +85,13 @@ public class SpringConfig{
     }
 
     @Bean
+    public RestTemplate restTemplate(){
+        return new RestTemplate();
+    }
+
+    @Bean
     public PostService postService(){
-        return new PostService(postRepository, categoryRepository, userRepository, likeRepository);
+        return new PostService(postRepository, postQueryRepository(), categoryRepository, userRepository, likeRepository, restTemplate());
     }
 
     @Bean

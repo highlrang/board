@@ -4,10 +4,12 @@ import com.myproject.myweb.domain.Category;
 import com.myproject.myweb.domain.Like;
 import com.myproject.myweb.domain.Post;
 import com.myproject.myweb.domain.user.User;
+import com.myproject.myweb.dto.post.query.PostByLikeCountQueryDto;
 import com.myproject.myweb.dto.user.UserRequestDto;
 import com.myproject.myweb.repository.CategoryRepository;
 import com.myproject.myweb.repository.like.LikeRepository;
 import com.myproject.myweb.repository.post.PostRepository;
+import com.myproject.myweb.repository.post.query.PostQueryRepository;
 import com.myproject.myweb.repository.user.UserRepository;
 import com.myproject.myweb.service.user.UserService;
 import org.junit.Test;
@@ -18,7 +20,10 @@ import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,6 +35,7 @@ public class DataInsertTest {
     @Autowired UserService userService;
     @Autowired UserRepository userRepository;
     @Autowired PostRepository postRepository;
+    @Autowired PostQueryRepository postQueryRepository;
     @Autowired LikeRepository likeRepository;
 
     @Test
@@ -119,5 +125,24 @@ public class DataInsertTest {
         }
 
         System.out.println(likeRepository.findAll().size());
+    }
+
+    @Test
+    public void 카테고리정렬미해결게시글(){
+        List<PostByLikeCountQueryDto> allPostsByLikeAndComplete =
+                postQueryRepository.findAllPostsByLikeAndComplete(5L);
+        // 20
+        Map<String, List<PostByLikeCountQueryDto>> posts = allPostsByLikeAndComplete.stream()
+                .sorted(Comparator.comparing(PostByLikeCountQueryDto::getPostLikeCount))
+                .collect(Collectors.groupingBy(PostByLikeCountQueryDto::getCategoryName));
+
+        for(String key: posts.keySet()){
+            for(PostByLikeCountQueryDto p: posts.get(key)){
+                System.out.println("카테고리 : " + key +
+                        " 제목 : " + p.getPostTitle() +
+                        " 작성자 : " + p.getWriterName() +
+                        " 좋아요수 : " + p.getPostLikeCount());
+            }
+        }
     }
 }

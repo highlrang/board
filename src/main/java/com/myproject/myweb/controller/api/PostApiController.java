@@ -5,6 +5,7 @@ import com.myproject.myweb.domain.Post;
 import com.myproject.myweb.dto.post.PostDetailResponseDto;
 import com.myproject.myweb.dto.post.PostRequestDto;
 import com.myproject.myweb.dto.post.query.PostQueryDto;
+import com.myproject.myweb.dto.post.query.admin.PostAdminMatchDto;
 import com.myproject.myweb.dto.user.UserResponseDto;
 import com.myproject.myweb.repository.like.LikeRepository;
 import com.myproject.myweb.dto.post.query.PostByLikeCountQueryDto;
@@ -197,8 +198,7 @@ public class PostApiController {
     @PostMapping("/api/v1/posts")
     public PostDetailResponseDto savePostV1(@RequestBody @Valid PostRequestDto postRequestDto){
         Long id = postService.save(postRequestDto);
-        PostDetailResponseDto postDetailResponseDto = postService.findById(id);
-        return postDetailResponseDto;
+        return postService.findById(id);
     }
 
     @PutMapping("/api/v1/posts/{id}")
@@ -216,21 +216,18 @@ public class PostApiController {
         postService.delete(id);
     }
 
-
-
-
-    @GetMapping("/api/v1/posts/likes/{count}")
-    public List<PostByLikeCountQueryDto> postsByTotalLikeV1(@PathVariable(value="count") int count){
-        return postQueryRepository.findAllPostsByLikeAndComplete(Long.valueOf(count));
-    }
-
     @GetMapping("/api/v1/posts/likes/category/{cateId}")
     public List<PostByLikeCountQueryDto> postsByLikeAndCategoryV1(@PathVariable(value="cateId") Long cateId){
         return postQueryRepository.findAllPostsByLikeAndCategory(cateId);
     }
 
-    @GetMapping("/api/v1/posts/likes/{count}/uncomplete")
-    public List<PostByLikeCountQueryDto> postsByLikeAndCompleteV1(@PathVariable(value="count") int count){
-        return postQueryRepository.findAllPostsByLikeAndComplete(Long.valueOf(count));
+    @GetMapping("/api/v1/posts/uncomplete/likes") // 20
+    public List<PostByLikeCountQueryDto> postsByLikeAndCompleteV1(@RequestParam(value="count", defaultValue = "5") Long count){
+        return postQueryRepository.findAllPostsByLikeAndComplete(count);
+    }
+
+    @GetMapping("/api/v1/posts/admin/matching")
+    public List<PostAdminMatchDto> postAdminMatch(){
+        return postService.postMatchingAdmin();
     }
 }

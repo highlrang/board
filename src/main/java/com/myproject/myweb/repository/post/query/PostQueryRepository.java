@@ -147,7 +147,7 @@ public class PostQueryRepository {
                 " join p.writer w" +
                 " where p.category.id =: cateId" +
                 " group by l.post" +
-                " having count(l.post) >= 1" + // 100개 이상 best글
+                " having count(l.post) >= 5" + // 100개 이상 best글
                 " order by count(l.post) desc", PostByLikeCountQueryDto.class)
                 .setParameter("cateId", cateId)
                 .getResultList();
