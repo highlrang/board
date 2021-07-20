@@ -17,6 +17,8 @@ import com.myproject.myweb.repository.post.query.PostQueryRepository;
 import com.myproject.myweb.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.*;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -148,24 +150,44 @@ public class PostService {
     }
 
     private List<PostAdminMatchDto> getPostAdminMatchDtos() {
-    /*
-    HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-    factory.setReadTimeout(5000);
-    factory.setConnectTimeout(3000);
-    HttpClient httpClient = HttpClientBuilder.create()
-            .setMaxConnTotal(100)
-            .setMaxConnPerRoute(5)
-            .build();
-    factory.setHttpClient(httpClient);
-     */
+        // @Async public return void, completableFuture & 같은 인스턴스 안의 메서드끼리 호출할때는 비동기 호출이 되지 않는다.
+        // 비동기는 async rest template >> return listenablefuture<ResoibseEntity<T>>
 
-        String url = "http://localhost:9090/external/api/v1/members/post-admin/best";
-        List<BestPostAdminDto> postAdmins = Arrays.asList(restTemplate.getForObject(url, BestPostAdminDto[].class));
-        // getForObject postForObject || responseEntity
-        // HttpEntity 생성해서 header와 같이 보내기
+        List<BestPostAdminDto> postAdmins = new ArrayList<>();
+        try {
+            HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+            factory.setReadTimeout(5000);
+            factory.setConnectTimeout(5000);
+            /*
+            HttpClient httpClient = HttpClientBuilder.create()
+                    .setMaxConnTotal(200) // 연결 유지 수
+                    .setMaxConnPerRoute(20)
+                    .build();
+            factory.setHttpClient(httpClient);
+            */
 
-        log.info("restTemplate 완료");
-        log.info(postAdmins.toString());
+            HttpHeaders header = new HttpHeaders();
+            // headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+            header.add("Content-Type", "application/json");
+            header.add("Accept", "");
+
+            HttpEntity entity = new HttpEntity(header); // post data 함께
+
+            String url = "http://localhost:9090/external/api/v1/members/post-admin/best";
+
+            ResponseEntity<BestPostAdminDto[]> results = restTemplate.exchange(url, HttpMethod.GET, entity, BestPostAdminDto[].class);
+
+            postAdmins = Arrays.asList(results.getBody());
+            // restTemplate.getForObject(url, BestPostAdminDto[].class)
+            // getForObject postForObject || responseEntity
+            // HttpEntity 생성해서 header와 같이 보내기
+
+            log.info("restTemplate 완료");
+            log.info(postAdmins.toString());
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 
         // category로 묶기
         List<PostAdminMatchDto> postAdminMatchDtos = postAdmins.stream()

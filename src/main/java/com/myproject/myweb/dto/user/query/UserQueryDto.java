@@ -13,12 +13,12 @@ public class UserQueryDto {
     private Long userId;
     private String userEmail;
     private String userName;
-    private String userRole; // title
+    private Role userRole; // title
 
     private List<UserLikeQueryDto> userLikes;
     private List<UserPostQueryDto> userPosts;
 
-    public UserQueryDto(Long userId, String userEmail, String userName, String userRole){
+    public UserQueryDto(Long userId, String userEmail, String userName, Role userRole){
         this.userId = userId;
         this.userEmail = userEmail;
         this.userName = userName;

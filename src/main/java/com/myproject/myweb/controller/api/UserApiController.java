@@ -170,7 +170,8 @@ public class UserApiController {
                 // userQueryRepository.findUserById(id)
         );
 
-        Long likeCount = likeRepository.countAllByPostWriter(user.getUserId()).get();
+        // 임시
+        Long likeCount = likeRepository.countAllByPost_Writer(userRepository.findById(id).get()).get(); // user로 보내기
         user.addTotalLike(likeCount);
 
         return user;

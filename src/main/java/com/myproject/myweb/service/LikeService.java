@@ -86,7 +86,7 @@ public class LikeService {
 
     // user가 자신의 게시글로 받은 모든 like 개수
     public Long findLikeInUser(Long userId){
-        return likeRepository.countAllByPostWriter(userId)
+        return likeRepository.countAllByPost_Writer(userId) // user entity로 넘기기
                 .orElseThrow(() -> new IllegalStateException());
     }
 }

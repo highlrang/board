@@ -25,8 +25,7 @@ public class SchedulerTask {
     private final UserQueryRepository userQueryRepository;
 
     // n1 이상의 like인 NORMAL유저를 승급하는 메서드 > n2 이상의 silval 승급은 다른 메서드에
-    // @Async
-    @Scheduled(cron = "* * 9 15 * *") // "0 */1 * * * *"
+    // @Scheduled(cron = "* * 9 15 * *") // "0 */1 * * * *"
     public void roleUpdateTask1(){
         List<WriterByLikeCountQueryDto> users =
                 userQueryRepository.findAllWritersByLikeCount(Long.valueOf(4));

@@ -20,7 +20,7 @@ public class PostQueryRepository {
 
     private final EntityManager em;
 
-    /*
+
     public List<PostQueryDto> findAllPostsByDto(){
         // 1. 단순 fetch join
         List<PostQueryDto> posts = findAllPosts();
@@ -73,10 +73,8 @@ public class PostQueryRepository {
                 ).getResultList();
         return posts;
     }
-    */
 
 
-    /*
     public List<PostQueryDto> findMyPostsByDto(Long writerId){
         List<PostQueryDto> posts = findMyPosts(writerId);
 
@@ -101,7 +99,6 @@ public class PostQueryRepository {
                         .getResultList();
         return posts;
     }
-     */
 
 
     // 게시글 페이징 처리 위해 sql 작성
@@ -120,7 +117,6 @@ public class PostQueryRepository {
 
     // like가 특정 개수 이상인 post list 출력
     // "count 내림차순"대로 post의 writer 정보
-    /*
     public List<PostByLikeCountQueryDto> findAllPostsByLikeCount(Long count){
 
         List<PostByLikeCountQueryDto> result = em.createQuery("select new com.myproject.myweb.dto.post.query.PostByLikeCountQueryDto(p.id, c.name, p.title, w.name, p.isComplete, count(l))" +
@@ -136,7 +132,6 @@ public class PostQueryRepository {
 
         return result;
     }
-    */
 
     public List<PostByLikeCountQueryDto> findAllPostsByLikeAndCategory(Long cateId){
 

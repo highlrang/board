@@ -1,6 +1,8 @@
 package com.myproject.myweb.repository.like.query;
 
 
+import com.myproject.myweb.domain.Like;
+import com.myproject.myweb.dto.like.query.LikeUserQuery;
 import com.myproject.myweb.dto.like.query.TotalLikeDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -17,7 +19,7 @@ public class LikeQueryRepository {
 
     private final EntityManager em;
 
-    /* v4 ~ v5 dto 이용
+    // v4 ~ v5 dto 이용
 
     // postId로 like list	(user 정보 잘 드러나게)
     // v4 dto
@@ -58,7 +60,7 @@ public class LikeQueryRepository {
     // 하지만 컬렉션의 경우 1 + n + n의 문제(fetch join 사용할 경우 distinct 필요)
     // fetch join 말고 다른 방법으로는 v3.1 or v5(dto)
 
-    */
+
 
     public Map<Long, Long> findAllLikesByPostsWriters(List<Long> userIds){
         Query entity = em.createNativeQuery(

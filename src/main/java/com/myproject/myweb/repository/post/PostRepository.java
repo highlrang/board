@@ -12,11 +12,10 @@ import java.util.OptionalInt;
 
 
 public interface PostRepository extends JpaRepository<Post, Long>{
-    //findByColumn은 쿼리 기본 제공
     List<Post> findByWriter(User writer);
 
     Long countByCategory_Id(Long cateId);
-    // fetch join 필요한지 쿼리 보기
+
     List<Post> findAllByCategory_IdAndIsPublic(Long cateId, Boolean isPublic);
     List<Post> findAllByCategory_IdAndWriter_Id(Long cateId, Long writerId);
 

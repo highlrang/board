@@ -32,7 +32,6 @@ public class UserQueryRepository {
 
     private final EntityManager em;
 
-    /*
     public List<UserQueryDto> findAllUsersByDto(){
         List<UserQueryDto> users = findAllUsers();
 
@@ -95,16 +94,13 @@ public class UserQueryRepository {
                 .getResultList();
 
         List<UserQueryDto> result = users.stream()
-                .map(u -> new UserQueryDto(u.getId(), u.getEmail(), u.getName(), u.getRole().getTitle()))
+                .map(u -> new UserQueryDto(u.getId(), u.getEmail(), u.getName(), u.getRole()))
                 .collect(Collectors.toList());
 
         return result;
     }
 
-    */
 
-
-    /*
     // role 별로 분리된 user list
     public List<UserQueryDto> findAllUsersByDto(Role role){
         List<UserQueryDto> users = findAllUsersByRole(role);
@@ -131,18 +127,18 @@ public class UserQueryRepository {
                 .getResultList();
 
         List<UserQueryDto> result = users.stream()
-                .map(u -> new UserQueryDto(u.getId(), u.getEmail(), u.getName(), u.getRole().getTitle()))
+                .map(u -> new UserQueryDto(u.getId(), u.getEmail(), u.getName(), u.getRole()))
                 .collect(Collectors.toList());
 
         return result;
     }
-     */
+
 
     public List<WriterByLikeCountQueryDto> findAllWritersByLikeCount(Long count){
 
         List<WriterByLikeCountQueryDto> result = em.createQuery("select new com.myproject.myweb.dto.user.query.WriterByLikeCountQueryDto(w.id, w.role, w.email, w.name, count(l))" +
                 " from Like l" +
-                " join l.post p" +
+                " join l.post p" + // fetch는 dto라 불가능
                 " join p.writer w" +
                 " group by l.post.writer" + // 이게 안될 수 있음
                 " having count(l.post.writer) >= :count" +
