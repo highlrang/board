@@ -1,5 +1,10 @@
 package com.myproject.myweb.dto.post.query;
 
+import com.querydsl.core.annotations.QueryProjection;
+import com.querydsl.core.types.dsl.BooleanPath;
+import com.querydsl.core.types.dsl.NumberExpression;
+import com.querydsl.core.types.dsl.NumberPath;
+import com.querydsl.core.types.dsl.StringPath;
 import lombok.Getter;
 
 @Getter

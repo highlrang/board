@@ -1,4 +1,4 @@
-package com.myproject.myweb.repository;
+package com.myproject.myweb.repository.like;
 
 import com.myproject.myweb.domain.Like;
 import com.myproject.myweb.domain.Post;
@@ -60,7 +60,7 @@ public class LikeRepositoryTest {
     @Test
     public void 작성자별_좋아요_총개수(){
         User user = userRepository.findByEmail("jhw127@naver.com").get();
-        Long count = likeRepository.countAllByPostWriter(user.getId()).get();
+        Long count = likeRepository.countAllByPost_Writer(user).get();
 
         List<Like> likes = likeRepository.findAll();
         Long likesCnt = 0L;

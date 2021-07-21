@@ -14,6 +14,7 @@ import com.myproject.myweb.repository.post.PostRepository;
 import com.myproject.myweb.dto.post.PostRequestDto;
 import com.myproject.myweb.dto.post.PostResponseDto;
 import com.myproject.myweb.repository.post.query.PostQueryRepository;
+import com.myproject.myweb.repository.post.query.PostQuerydslRepository;
 import com.myproject.myweb.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PostService {
     private final PostRepository postRepository;
-    private final PostQueryRepository postQueryRepository;
+    private final PostQuerydslRepository postQuerydslRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
@@ -199,7 +200,7 @@ public class PostService {
 
     private Map<String, List<Long>> getPostIdMap() {
         List<PostByLikeCountQueryDto> allPostsByLikeAndComplete =
-                postQueryRepository.findAllPostsByLikeAndComplete(5L); // 20
+                postQuerydslRepository.findAllPostsByLikeAndCategoryAndComplete(5L, true); // 20
         allPostsByLikeAndComplete.sort(Comparator.comparing(PostByLikeCountQueryDto::getPostLikeCount));
 
         // category로 묶기

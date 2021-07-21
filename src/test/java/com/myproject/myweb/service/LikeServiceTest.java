@@ -66,7 +66,7 @@ public class LikeServiceTest {
         if(thereIs && id != -1L){
             assertFalse(likeRepository.findById(id).isPresent());
         }else{
-            assertTrue(likeRepository.findLikeOne(postId, userId).isPresent());
+            assertTrue(likeRepository.findByPost_IdAndUser_Id(postId, userId).isPresent());
         }
 
 

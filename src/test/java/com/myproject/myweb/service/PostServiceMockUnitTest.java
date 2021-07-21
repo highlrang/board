@@ -13,6 +13,7 @@ import com.myproject.myweb.repository.CategoryRepository;
 import com.myproject.myweb.repository.like.LikeRepository;
 import com.myproject.myweb.repository.post.PostRepository;
 import com.myproject.myweb.repository.post.query.PostQueryRepository;
+import com.myproject.myweb.repository.post.query.PostQuerydslRepository;
 import com.myproject.myweb.repository.user.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +43,7 @@ import static org.mockito.Mockito.*;
 public class PostServiceMockUnitTest {
 
     @Mock private PostRepository postRepository;
-    @Mock private PostQueryRepository postQueryRepository;
+    @Mock private PostQuerydslRepository postQuerydslRepository;
     @Mock private UserRepository userRepository;
     @Mock private CategoryRepository categoryRepository;
     @Mock private LikeRepository likeRepository;
@@ -52,7 +53,7 @@ public class PostServiceMockUnitTest {
     @Before
     public void init(){
         MockitoAnnotations.initMocks(this);
-        postService = new PostService(postRepository, postQueryRepository, categoryRepository, userRepository, likeRepository, restTemplate);
+        postService = new PostService(postRepository, postQuerydslRepository, categoryRepository, userRepository, likeRepository, restTemplate);
     }
 
     @Test

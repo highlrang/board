@@ -1,7 +1,8 @@
-package com.myproject.myweb.repository;
+package com.myproject.myweb.repository.post;
 
 import com.myproject.myweb.domain.Category;
 import com.myproject.myweb.domain.user.User;
+import com.myproject.myweb.repository.CategoryRepository;
 import com.myproject.myweb.repository.post.PostRepository;
 import com.myproject.myweb.repository.post.query.PostQueryRepository;
 import com.myproject.myweb.repository.user.UserRepository;
@@ -28,7 +29,8 @@ public class PostRepositoryTest {
     @Autowired PostRepository postRepository;
     @Autowired PostQueryRepository postQueryRepository;
     @Autowired UserRepository userRepository;
-    @Autowired CategoryRepository categoryRepository;
+    @Autowired
+    CategoryRepository categoryRepository;
 
     @Test
     public void 게시글_저장(){

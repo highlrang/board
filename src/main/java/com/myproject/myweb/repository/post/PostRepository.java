@@ -16,8 +16,10 @@ public interface PostRepository extends JpaRepository<Post, Long>{
 
     Long countByCategory_Id(Long cateId);
 
-    List<Post> findAllByCategory_IdAndIsPublic(Long cateId, Boolean isPublic);
-    List<Post> findAllByCategory_IdAndWriter_Id(Long cateId, Long writerId);
+    @Query("select p from Post p join fetch p.category c join fetch p.writer w where c.id =:cateId and p.isPublic =:isPublic")
+    List<Post> findAllByCategory_IdAndIsPublic(@Param("cateId") Long cateId, @Param("isPublic") Boolean isPublic);
+    @Query("select p from Post p join fetch p.category c join fetch p.writer w where c.id =:cateId and w.id =:writerId")
+    List<Post> findAllByCategory_IdAndWriter_Id(@Param("cateId") Long cateId, @Param("writerId") Long writerId);
 
     // ToOne관계 join fetch 하느라 query 작성함
     @Query("select p from Post p join fetch p.writer w join fetch p.category c where p.isPublic = true")

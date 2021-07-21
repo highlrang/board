@@ -7,8 +7,10 @@ import com.myproject.myweb.dto.post.query.PostByLikeCountQueryDto;
 import com.myproject.myweb.dto.user.query.WriterByLikeCountQueryDto;
 import com.myproject.myweb.repository.like.LikeRepository;
 import com.myproject.myweb.repository.like.query.LikeQueryRepository;
+import com.myproject.myweb.repository.like.query.LikeQuerydslRepository;
 import com.myproject.myweb.repository.user.UserRepository;
 import com.myproject.myweb.repository.user.query.UserQueryRepository;
+import com.myproject.myweb.repository.user.query.UserQuerydslRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,9 +25,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserApiController {
 
-    private final UserQueryRepository userQueryRepository;
+    private final UserQuerydslRepository userQuerydslRepository;
     private final UserRepository userRepository;
-    private final LikeQueryRepository likeQueryRepository;
+    private final LikeQuerydslRepository likeQuerydslRepository;
     private final LikeRepository likeRepository;
 
     @GetMapping("/api/v1/users")
@@ -48,7 +50,7 @@ public class UserApiController {
     }
 
     private Map<Long, Long> getLikeCountsByUserIds(List<Long> userIds) {
-        Map<Long, Long> likeCounts = likeQueryRepository.findAllLikesByPostsWriters(userIds);
+        Map<Long, Long> likeCounts = likeQuerydslRepository.findAllLikesByPostsWriters(userIds);
         return likeCounts;
     }
 
@@ -166,7 +168,7 @@ public class UserApiController {
     public UserDto usersByIdV1(@PathVariable(value = "id") Long id){
         UserDto user = new UserDto(
                 userRepository.findById(id)
-                        .orElseThrow(() -> new IllegalStateException())
+                        .orElseThrow(IllegalStateException::new)
                 // userQueryRepository.findUserById(id)
         );
 
@@ -178,7 +180,7 @@ public class UserApiController {
     }
 
     @GetMapping("/api/v1/users/likes/{count}")
-    public List<WriterByLikeCountQueryDto> writersByTotalLikeV1(@PathVariable(value="count") int count){
-        return userQueryRepository.findAllWritersByLikeCount(Long.valueOf(count));
+    public List<WriterByLikeCountQueryDto> writersByTotalLikeV1(@PathVariable(value="count") long count){
+        return userQuerydslRepository.findAllWritersByLikeCount(count);
     }
 }

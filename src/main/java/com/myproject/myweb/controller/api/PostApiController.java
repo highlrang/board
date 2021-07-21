@@ -12,6 +12,7 @@ import com.myproject.myweb.dto.post.query.PostByLikeCountQueryDto;
 import com.myproject.myweb.repository.like.query.LikeQueryRepository;
 import com.myproject.myweb.repository.post.PostRepository;
 import com.myproject.myweb.repository.post.query.PostQueryRepository;
+import com.myproject.myweb.repository.post.query.PostQuerydslRepository;
 import com.myproject.myweb.service.PostService;
 import com.myproject.myweb.dto.post.PostResponseDto;
 import lombok.AllArgsConstructor;
@@ -34,7 +35,7 @@ public class PostApiController {
     // toMany가 아니라면 fetch join과 dto로 받는 것만으로 완료됨
 
     private final PostRepository postRepository;
-    private final PostQueryRepository postQueryRepository;
+    private final PostQuerydslRepository postQuerydslRepository;
     private final PostService postService;
     private final LikeRepository likeRepository;
     private HttpSession session;
@@ -78,7 +79,7 @@ public class PostApiController {
     @GetMapping("/api/v1/posts/category/{cateId}")
     public Result<PostListDto> postsByCategoryV1(@PathVariable("cateId") Long cateId,
                                                @RequestParam(value = "offset", defaultValue = "0") int offset){
-        List<Post> entity = postQueryRepository.findAllWithCategoryAndPublicAndPagingByFetch(cateId, offset);
+        List<Post> entity = postQuerydslRepository.findAllWithCategoryAndPublicAndPagingByFetch(cateId, offset);
         List<PostListDto> posts = toPostListDtos(entity);
 
         Long count = postRepository.countByCategory_Id(cateId);
@@ -100,7 +101,7 @@ public class PostApiController {
     public List<PostListDto> PostsByWriterV1(@PathVariable("writerId") Long writerId){
 
         UserResponseDto user = (UserResponseDto)session.getAttribute("user");
-        if(user.getId() != writerId){
+        if(!user.getId().equals(writerId)){
             // 요청자 작성자 일치 확인
         }
 
@@ -187,7 +188,7 @@ public class PostApiController {
         // fetch join 안 한 likes만 stream()으로 lazy 초기화 필요 // 데이터 하나니까 1 + n 걱정 안하기
 
         Post entity = postRepository.findByIdFetch(id)
-                .orElseThrow(() -> new IllegalStateException());
+                .orElseThrow(IllegalStateException::new);
 
         PostDto post = new PostDto(entity); // repository에서 해야 영속성 유지되는 거 아님??!
         post.addTotalLike(likeRepository.countAllByPost_Id(post.getId()).get());
@@ -216,14 +217,14 @@ public class PostApiController {
         postService.delete(id);
     }
 
-    @GetMapping("/api/v1/posts/likes/category/{cateId}")
+    @GetMapping("/api/v1/posts/best-likes/category/{cateId}")
     public List<PostByLikeCountQueryDto> postsByLikeAndCategoryV1(@PathVariable(value="cateId") Long cateId){
-        return postQueryRepository.findAllPostsByLikeAndCategory(cateId);
+        return postQuerydslRepository.findAllPostsByLikeAndCategoryAndComplete(cateId, null);
     }
 
-    @GetMapping("/api/v1/posts/uncomplete/likes") // 20
-    public List<PostByLikeCountQueryDto> postsByLikeAndCompleteV1(@RequestParam(value="count", defaultValue = "5") Long count){
-        return postQueryRepository.findAllPostsByLikeAndComplete(count);
+    @GetMapping("/api/v1/posts/by/best-likes/category/{cateId}/for-complete")
+    public List<PostByLikeCountQueryDto> postsByLikeAndCompleteV1(@PathVariable(value="cateId") Long cateId){
+        return postQuerydslRepository.findAllPostsByLikeAndCategoryAndComplete(cateId, false);
     }
 
     @GetMapping("/api/v1/posts/admin/matching")

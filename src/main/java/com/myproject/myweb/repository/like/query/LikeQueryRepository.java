@@ -20,7 +20,6 @@ public class LikeQueryRepository {
     private final EntityManager em;
 
     // v4 ~ v5 dto 이용
-
     // postId로 like list	(user 정보 잘 드러나게)
     // v4 dto
     public List<LikeUserQuery> findAllLikesByPost(Long postId){ // Dto 따로 만들기? (entity password에 @JsonIgnore)
@@ -76,8 +75,8 @@ public class LikeQueryRepository {
 
         Map<Long, Long> likes = result.stream()
                 .collect(Collectors.toMap(
-                        e -> e.getId(),
-                        e -> e.getTotalLike()
+                        TotalLikeDto::getId,
+                        TotalLikeDto::getTotalLike
                 ));
 
         return likes;
@@ -96,8 +95,8 @@ public class LikeQueryRepository {
         List<TotalLikeDto> result = entity.getResultList();
 
         Map<Long, Long> likes = result.stream()
-                .collect(Collectors.toMap(e -> e.getId(),
-                                          e -> e.getTotalLike()));
+                .collect(Collectors.toMap(TotalLikeDto::getId,
+                        TotalLikeDto::getTotalLike));
 
         return likes;
 

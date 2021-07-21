@@ -7,6 +7,7 @@ import com.myproject.myweb.dto.like.LikeRequestDto;
 import com.myproject.myweb.dto.like.LikeResponseDto;
 import com.myproject.myweb.repository.like.LikeRepository;
 import com.myproject.myweb.repository.like.query.LikeQueryRepository;
+import com.myproject.myweb.repository.like.query.LikeQuerydslRepository;
 import com.myproject.myweb.service.LikeService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 public class LikeApiController {
 
     private final LikeRepository likeRepository;
-    private final LikeQueryRepository likeQueryRepository;
+    private final LikeQuerydslRepository likeQuerydslRepository;
     private final LikeService likeService;
 
     @Data
@@ -64,7 +65,7 @@ public class LikeApiController {
                 .collect(Collectors.toList());
 
         List<Long> postIds = result.stream().map(p -> p.getPostId()).collect(Collectors.toList());
-        Map<Long, Long> likeCount = likeQueryRepository.findAllLikesByPostsIds(postIds); // native query
+        Map<Long, Long> likeCount = likeQuerydslRepository.findAllLikesByPostsIds(postIds); // native query
         result.forEach(r -> r.addTotalLike(likeCount.get(r.getPostId())));
 
         return new Result(entity.get(0).getUser().getName(), result);

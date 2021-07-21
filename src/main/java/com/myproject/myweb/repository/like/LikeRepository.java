@@ -13,14 +13,13 @@ import java.util.Optional;
 
 public interface LikeRepository extends JpaRepository<Like, Long> {
 
-    @Query("SELECT l FROM Like l WHERE l.post.id = :post and l.user.id = :user")
-    Optional<Like> findLikeOne(@Param(value="post") Long postId, @Param("user") Long userId);
-    Optional<Like> findByPost_IdAndUser_Id(Long postId, Long userId); // 이거 같은 쿼리 날리는지 확인
+    Optional<Like> findByPost_IdAndUser_Id(Long postId, Long userId);
+    // 얘는 left join 날림 user, post 정보 쓸 거면 fetch 등 조치 필요
 
-
-    // 전달 파라미터 하나일 때 이거 이용, 여러 개일 때 queryRepository꺼 이용
+    // 전달 파라미터 하나일 때
     // @Query("SELECT count(l) FROM Like l WHERE l.post.writer = (SELECT u FROM User u WHERE u.id = :userId)")
-    Optional<Long> countAllByPost_Writer(User user); // id가 아닌 writer 전달하기
+    Optional<Long> countAllByPost_Writer(User user); // id가 아닌 writer 전달
+    // left join 날림 but select one(count) 이기에 성능 차이 없음
     Optional<Long> countAllByPost_Id(Long postId);
 
     // 자동 쿼리 생성

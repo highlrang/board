@@ -22,12 +22,14 @@ import com.myproject.myweb.repository.like.LikeRepository;
 import com.myproject.myweb.repository.like.query.LikeQueryRepository;
 import com.myproject.myweb.repository.post.PostRepository;
 import com.myproject.myweb.repository.post.query.PostQueryRepository;
+import com.myproject.myweb.repository.post.query.PostQuerydslRepository;
 import com.myproject.myweb.repository.user.UserRepository;
 import com.myproject.myweb.repository.user.query.UserQueryRepository;
 import com.myproject.myweb.service.CategoryService;
 import com.myproject.myweb.service.LikeService;
 import com.myproject.myweb.service.PostService;
 import com.myproject.myweb.service.user.UserService;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,19 +59,16 @@ public class SpringConfig{
      */
 
     private final EntityManager em;
+
     @Bean
-    public UserQueryRepository userQueryRepository(){
-        return new UserQueryRepository(em);
-    }
-    @Bean
-    public PostQueryRepository postQueryRepository(){
-        return new PostQueryRepository(em);
-    }
-    @Bean
-    public LikeQueryRepository likeQueryRepository(){
-        return new LikeQueryRepository(em);
+    public JPAQueryFactory jpaQueryFactory(){
+        return new JPAQueryFactory(em);
     }
 
+    @Bean
+    public PostQuerydslRepository postQuerydslRepository(){
+        return new PostQuerydslRepository(jpaQueryFactory());
+    }
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder(){
@@ -84,14 +83,14 @@ public class SpringConfig{
         return new CategoryService(categoryRepository);
     }
 
-    @Bean
+    @Bean // 자동 등록 아님?
     public RestTemplate restTemplate(){
         return new RestTemplate();
     }
 
     @Bean
     public PostService postService(){
-        return new PostService(postRepository, postQueryRepository(), categoryRepository, userRepository, likeRepository, restTemplate());
+        return new PostService(postRepository, postQuerydslRepository(), categoryRepository, userRepository, likeRepository, restTemplate());
     }
 
     @Bean

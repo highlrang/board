@@ -89,5 +89,17 @@ public class UserQuerydslRepository {
 
     }
 
-    // public List<WriterByLikeCountQueryDto> findAllWritersByLikeCount(Long count){ }
+    public List<WriterByLikeCountQueryDto> findAllWritersByLikeCount(Long count){
+
+        List<WriterByLikeCountQueryDto> writers = queryFactory
+                .select(Projections.constructor(WriterByLikeCountQueryDto.class, user.id, user.role, user.name, user.email, like.count()))
+                .from(post)
+                .leftJoin(post.writer, user)
+                .leftJoin(post.likeList, like)
+                .groupBy(user)
+                .having(like.count().goe(count))
+                .fetch();
+
+        return writers;
+    }
 }
