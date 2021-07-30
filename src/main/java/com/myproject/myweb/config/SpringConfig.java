@@ -83,14 +83,9 @@ public class SpringConfig{
         return new CategoryService(categoryRepository);
     }
 
-    @Bean // 자동 등록 아님?
-    public RestTemplate restTemplate(){
-        return new RestTemplate();
-    }
-
     @Bean
     public PostService postService(){
-        return new PostService(postRepository, postQuerydslRepository(), categoryRepository, userRepository, likeRepository, restTemplate());
+        return new PostService(postRepository, postQuerydslRepository(), categoryRepository, userRepository, likeRepository);
     }
 
     @Bean

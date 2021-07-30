@@ -13,16 +13,14 @@ import com.myproject.myweb.repository.like.LikeRepository;
 import com.myproject.myweb.repository.post.PostRepository;
 import com.myproject.myweb.dto.post.PostRequestDto;
 import com.myproject.myweb.dto.post.PostResponseDto;
-import com.myproject.myweb.repository.post.query.PostQueryRepository;
 import com.myproject.myweb.repository.post.query.PostQuerydslRepository;
 import com.myproject.myweb.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.*;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,7 +35,7 @@ public class PostService {
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
 
-    private final RestTemplate restTemplate;
+    private final WebClient webClient = WebClient.create(); // builder()
 
 
     public PostDetailResponseDto findById(Long id) {
@@ -136,7 +134,6 @@ public class PostService {
 
     public List<PostAdminMatchDto> postMatchingAdmin() {
         Map<String, List<Long>> postIds = getPostIdMap();
-        log.info(postIds.values().toString());
 
         List<PostAdminMatchDto> postAdminMatchDtos = getPostAdminMatchDtos();
 
@@ -154,37 +151,19 @@ public class PostService {
         // @Async public return void, completableFuture & 같은 인스턴스 안의 메서드끼리 호출할때는 비동기 호출이 되지 않는다.
         // 비동기는 async rest template >> return listenablefuture<ResoibseEntity<T>>
 
-        List<BestPostAdminDto> postAdmins = new ArrayList<>();
-        try {
-            HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-            factory.setReadTimeout(5000);
-            factory.setConnectTimeout(5000);
-            /*
-            HttpClient httpClient = HttpClientBuilder.create()
-                    .setMaxConnTotal(200) // 연결 유지 수
-                    .setMaxConnPerRoute(20)
-                    .build();
-            factory.setHttpClient(httpClient);
-            */
+        List<BestPostAdminDto> postAdmins = null;
+        try{
+            String url = "http://127.0.0.1:9090/external/api/v1/members/post-admin/best";
+            Mono<BestPostAdminDto[]> response = webClient.mutate()
+                    .baseUrl(url)
+                    .defaultHeader("Content-Type", "application/json")
+                    .defaultHeader("Accept", "application/json")
+                    .build()
+                    .get()
+                    .retrieve()
+                    .bodyToMono(BestPostAdminDto[].class);
 
-            HttpHeaders header = new HttpHeaders();
-            // headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-            header.add("Content-Type", "application/json");
-            header.add("Accept", "");
-
-            HttpEntity entity = new HttpEntity(header); // post data 함께
-
-            String url = "http://localhost:9090/external/api/v1/members/post-admin/best";
-
-            ResponseEntity<BestPostAdminDto[]> results = restTemplate.exchange(url, HttpMethod.GET, entity, BestPostAdminDto[].class);
-
-            postAdmins = Arrays.asList(results.getBody());
-            // restTemplate.getForObject(url, BestPostAdminDto[].class)
-            // getForObject postForObject || responseEntity
-            // HttpEntity 생성해서 header와 같이 보내기
-
-            log.info("restTemplate 완료");
-            log.info(postAdmins.toString());
+            postAdmins = Arrays.asList(response.block());
 
         }catch(Exception e){
             e.printStackTrace();
@@ -199,13 +178,13 @@ public class PostService {
     }
 
     private Map<String, List<Long>> getPostIdMap() {
-        List<PostByLikeCountQueryDto> allPostsByLikeAndComplete =
-                postQuerydslRepository.findAllPostsByLikeAndCategoryAndComplete(5L, true); // 20
-        allPostsByLikeAndComplete.sort(Comparator.comparing(PostByLikeCountQueryDto::getPostLikeCount));
+        List<PostByLikeCountQueryDto> allPosts =
+                postQuerydslRepository.findAllPostsByLikeAndCategoryAndComplete(null, false);
+        allPosts.sort(Comparator.comparing(PostByLikeCountQueryDto::getPostLikeCount));
 
         // category로 묶기
         Map<String, List<Long>> postIds = new HashMap<>();
-        allPostsByLikeAndComplete.stream()
+        allPosts.stream()
                 .collect(Collectors.groupingBy(PostByLikeCountQueryDto::getCategoryName))
                 .forEach((key, value) -> postIds.put(key, value.stream().map(PostByLikeCountQueryDto::getPostId).collect(Collectors.toList())));
 

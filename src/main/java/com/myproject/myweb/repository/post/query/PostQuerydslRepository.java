@@ -44,12 +44,19 @@ public class PostQuerydslRepository {
                 .innerJoin(post.category, category)
                 .innerJoin(post.writer, user)
                 .innerJoin(post.likeList, like)
-                .where(category.id.eq(cateId), eqIsComplete(isComplete))
-                .groupBy(like.post.id)
+                .where(eqCategoryId(cateId), eqIsComplete(isComplete))
+                .groupBy(like.post)
                 .having(like.count().goe(5))
                 .fetch();
 
         return fetch;
+    }
+
+    private BooleanExpression eqCategoryId(Long cateId){
+        if(cateId == null){
+            return null;
+        }
+        return category.id.eq(cateId);
     }
 
     private BooleanExpression eqIsComplete(Boolean isComplete) {

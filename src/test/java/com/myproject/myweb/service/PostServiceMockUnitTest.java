@@ -53,7 +53,7 @@ public class PostServiceMockUnitTest {
     @Before
     public void init(){
         MockitoAnnotations.initMocks(this);
-        postService = new PostService(postRepository, postQuerydslRepository, categoryRepository, userRepository, likeRepository, restTemplate);
+        postService = new PostService(postRepository, postQuerydslRepository, categoryRepository, userRepository, likeRepository);
     }
 
     @Test

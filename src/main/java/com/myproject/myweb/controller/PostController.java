@@ -10,6 +10,7 @@ import com.myproject.myweb.dto.user.UserResponseDto;
 import com.myproject.myweb.service.PostService;
 import com.myproject.myweb.dto.post.PostResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -26,12 +27,13 @@ public class PostController {
 
     @GetMapping("/create")
     public String postCreateForm(@RequestParam("cateId") Long cateId,
-                                 // @ModelAttribute PostRequestDto postRequestDto,
-                                 Model model){
+                                 @ModelAttribute PostRequestDto postRequestDto, // 자동으로 넘어감
+                                 Model model,
+                                 @AuthenticationPrincipal User user){
 
-        UserResponseDto user = (UserResponseDto)session.getAttribute("user");
+        UserResponseDto sessionUser = (UserResponseDto)session.getAttribute("user");
         model.addAttribute("cateId", cateId);
-        model.addAttribute("userId", user.getId());
+        model.addAttribute("userId", sessionUser.getId());
 
         return "post/create";
     }

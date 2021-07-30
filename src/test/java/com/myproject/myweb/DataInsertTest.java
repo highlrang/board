@@ -10,6 +10,7 @@ import com.myproject.myweb.repository.CategoryRepository;
 import com.myproject.myweb.repository.like.LikeRepository;
 import com.myproject.myweb.repository.post.PostRepository;
 import com.myproject.myweb.repository.post.query.PostQueryRepository;
+import com.myproject.myweb.repository.post.query.PostQuerydslRepository;
 import com.myproject.myweb.repository.user.UserRepository;
 import com.myproject.myweb.service.user.UserService;
 import org.junit.Test;
@@ -35,7 +36,7 @@ public class DataInsertTest {
     @Autowired UserService userService;
     @Autowired UserRepository userRepository;
     @Autowired PostRepository postRepository;
-    @Autowired PostQueryRepository postQueryRepository;
+    @Autowired PostQuerydslRepository postQuerydslRepository;
     @Autowired LikeRepository likeRepository;
 
     @Test
@@ -130,15 +131,15 @@ public class DataInsertTest {
     @Test
     public void 카테고리정렬미해결게시글(){
         List<PostByLikeCountQueryDto> allPostsByLikeAndComplete =
-                postQueryRepository.findAllPostsByLikeAndComplete(5L);
+                postQuerydslRepository.findAllPostsByLikeAndCategoryAndComplete(22L, false);
         // 20
         Map<String, List<PostByLikeCountQueryDto>> posts = allPostsByLikeAndComplete.stream()
                 .sorted(Comparator.comparing(PostByLikeCountQueryDto::getPostLikeCount))
                 .collect(Collectors.groupingBy(PostByLikeCountQueryDto::getCategoryName));
 
-        for(String key: posts.keySet()){
-            for(PostByLikeCountQueryDto p: posts.get(key)){
-                System.out.println("카테고리 : " + key +
+        for(Map.Entry<String, List<PostByLikeCountQueryDto>> entry: posts.entrySet()){
+            for(PostByLikeCountQueryDto p: entry.getValue()) {
+                System.out.println("카테고리 : " + entry.getKey() +
                         " 제목 : " + p.getPostTitle() +
                         " 작성자 : " + p.getWriterName() +
                         " 좋아요수 : " + p.getPostLikeCount());
