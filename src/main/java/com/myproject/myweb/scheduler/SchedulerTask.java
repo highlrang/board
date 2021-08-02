@@ -24,7 +24,7 @@ public class SchedulerTask {
     @Autowired JobLauncher jobLauncher;
     Job job;
 
-    @Scheduled(cron = "0 */1 * * * *") // "0 */1 * * * *" "* * 9 15 * *"
+    // @Scheduled(cron = "0 */1 * * * *") // "0 */1 * * * *" "* * 9 15 * *"
     public void roleUpdateTask1() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         jobLauncher.run(job,
                 new JobParametersBuilder()

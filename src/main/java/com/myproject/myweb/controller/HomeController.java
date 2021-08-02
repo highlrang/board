@@ -1,11 +1,10 @@
 package com.myproject.myweb.controller;
 
-// final & final static
-
 import com.myproject.myweb.service.user.UserService;
 import com.myproject.myweb.dto.user.UserRequestDto;
 import com.myproject.myweb.dto.user.UserResponseDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -14,7 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
-@RequiredArgsConstructor // 생성자 의존 주입
+@Slf4j
+@RequiredArgsConstructor
 @Controller
 public class HomeController {
     private final UserService userService;

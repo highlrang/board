@@ -41,7 +41,7 @@ public class UserRoleUpdateJob {
         this.chunkSize = chunkSize;
     }
 
-    @Bean
+    // @Bean
     public Job jpaCursorJob(){
         return jobBuilderFactory.get(JOB_NAME)
                 .start(jpaCursorStep())
