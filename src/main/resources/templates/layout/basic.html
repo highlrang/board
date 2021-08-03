@@ -6,8 +6,11 @@
 </head>
 
 <body>
+
     <header th:replace="layout/fragment/header :: headerFragment"></header>
-    <div layout:fragment="content"></div>
+
+    <div class="container-fluid m-5" layout:fragment="content"></div>
+
     <footer th:replace="layout/fragment/footer :: footerFragment"></footer>
 
 </body>

@@ -45,28 +45,19 @@ public class PostController {
     }
 
     @GetMapping("/detail/{id}") // ?key=value는 RequestParam
-    public String postDetail(@PathVariable Long id, Model model){
+    public String postDetail(@PathVariable Long id, Model model) {
         PostDetailResponseDto post = postService.findById(id);
         model.addAttribute("post", post);
 
         UserResponseDto user = (UserResponseDto) session.getAttribute("user");
-        model.addAttribute("userId", user.getId());
-
-        Boolean alreadyLiked = post.getLikes()
-                .stream().anyMatch(l -> l.getUserId().equals(user.getId()));
-                // .filter(l -> l.getUserId() == user.getId())
-                // .map(l -> l.getUserId() == user.getId() ? true : false);
-        model.addAttribute("alreadyLiked", alreadyLiked);
+        if(user != null) {
+            if (post.getWriterId().equals(user.getId())) model.addAttribute("myPost", true);
+            Boolean alreadyLiked = post.getLikes()
+                    .stream().anyMatch(l -> l.getUserId().equals(user.getId()));
+            model.addAttribute("alreadyLiked", alreadyLiked);
+        }
 
         return "post/detail";
-    }
-
-    @GetMapping("/detail/mine/{id}") // ?key=value는 RequestParam
-    public String postDetailMine(@PathVariable Long id, Model model){
-        PostDetailResponseDto post = postService.findById(id);
-        model.addAttribute("post", post);
-        return "post/detailones";
-
     }
 
     @GetMapping("/list")

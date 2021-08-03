@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="https://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/basic">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-    <script src="/js/index.js"></script>
 </head>
 <body>
 <script>
@@ -41,40 +41,95 @@
         location.href='/post/detail/' + id;
 
     }
-
-    function goMyDetail(id){
-        location.href='/post/detail/mine/' + id;
-
-    }
 </script>
-<br><br>
-<div>
-    <div><a th:href="@{/post/create(cateId=${cateId})}">게시글 생성</a></div><br><br>
 
-    <form><!-- 필요없는듯?? -->
+<div layout:fragment="content" id="listView">
+    <div><a class="btn btn-light" th:href="@{/post/create(cateId=${cateId})}">게시글 생성</a></div>
+
+    <div>
         <input type="hidden" th:value="${userId}" id="userId"/>
         <input type="hidden" th:value="${cateId}" id="cateId"/>
         <input type="hidden" id="offset" value="0"/>
         <input type="hidden" id="limit"/>
-
 
         <span style="display: none">
             <input type="button" id="post-best"/>
         </span>
 
         <span id="myPost" style="display: block">
-            <input type="button" id="post-mylist" value="나의 게시글 조회"/>
+            <input type="button" class="btn btn-light" id="post-mylist" value="나의 게시글 조회"/>
         </span>
         <span id="allPost" style="display: none">
-            <input type="button" id="post-list" value="전체 게시글 조회"/>
+            <input type="button" class="btn btn-light" id="post-list" value="전체 게시글 조회"/>
         </span>
 
-    </form><br><br>
+    </div>
 
     <div>
-        <span id="bestTable"></span><br><br><br>
-        <span id="myTable" style="display: none"></span>
-        <span id="allTable" style="display: none"></span>
+        <div id="bestTable">
+            <h3>베스트 게시글</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">제목</th>
+                        <th scope="col">작성자</th>
+                        <th scope="col">좋아요</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <span th:each="post, i: ${bestPosts}">
+                            <th scope="row">${i.count}</th>
+                            <td>
+                                <span th:text="${post.title}"></span>
+                            </td>
+                            <td>
+                                <span th:text="${post.writer}"></span>
+                            </td>
+                            <td>
+                                <span th:text="${post.likeCount}"></span>
+                            </td>
+                            <td>
+                                <span onclick="'goDetail('+${post.postId}+')'">열람</span>
+                            </td>
+                        </span>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <span id="postTable">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">제목</th>
+                        <th scope="col">작성자</th>
+                        <th scope="col">열람</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <span th:each="post, i: ${postList}">
+                            <th scope="row">${i.count}</th>
+                            <td>
+                                <span th:text="${post.title}"></span>
+                            </td>
+                            <td>
+                                <span th:text="${post.writer}"></span>
+                            </td>
+                            <td>
+                                <span th:onclick="'goDetail('+${post.postId}+')'" th:text="열람"></span>
+                            </td>
+                        </span>
+                    </tr>
+                </tbody>
+            </table>
+            <span th:each="page: ${#numbers.sequence(1,pages)}">
+                <input type="button" name="page" th:value="${page}">
+            </span>
+        </span>
     </div>
 
 </div>

@@ -1,12 +1,24 @@
 /*
 <script src="/js/index.js"></script>
-
 원하는 곳에서 $("#id") 부여해주면 됨
+
+<div th:with='categories=${
+data
+}'>
+$("#resultDiv").replaceWith(data);
+append()
+html()
+
 */
 
+// 파일 분리하기 !!!!!!
 var main = {
         init : function () {
             var _this = this;
+
+            $(document).ready(function(){
+                _this.categoryList();
+            });
 
             $(document).on('click', '#post-save', function(){
                 _this.save();
@@ -37,6 +49,21 @@ var main = {
             });
         },
 
+        categoryList : function(){
+            $.ajax({
+                type: 'GET',
+                url: '/api/v1/category',
+                dataType: 'json'
+
+            }).done(function(data){
+                console.log(data);
+                // var categoryList = "<div th:with='categories=${"+data+"}'>";
+                // $("#header").append(categoryList); //replaceWith
+
+            }).fail(function (error) {
+                alert(JSON.stringify(error));
+            });
+        },
 
         save : function () {
             var data = {
@@ -98,8 +125,7 @@ var main = {
             $.ajax({
                 type: 'DELETE',
                 url: '/api/v1/posts/'+id,
-                dataType: 'json',
-                contentType: 'application/json; charset=utf-8'
+                dataType: 'json'
 
             }).done(function(){
                 alert('글이 삭제되었습니다.');
@@ -117,10 +143,10 @@ var main = {
             $.ajax({
                 type: 'GET',
                 url: '/api/v1/posts/category/'+id+"?offset="+offset,
-                dataType: 'json',
-                contentType: 'application/json; charset=utf-8'
+                dataType: 'json'
 
             }).done(function(data){
+                /*
                 var table = "<h3>전체 게시글</h3><table><thead><tr>";
 
                 console.log(data["count"]);
@@ -148,9 +174,20 @@ var main = {
                 }
 
                 table += "</span>";
-
                 $("#allTable").html(table);
-                // $().html() 또는 .append() !!
+                */
+
+                var cnt;
+                if(data["count"] % 10 == 0){
+                    cnt = data["count"] / 10;
+                }else{
+                    cnt = parseInt(data["count"] / 10) + 1;
+                }
+                var pages = "<div th:with='pages=${"+cnt+"}'>";
+                var postList = "<div th:with='postList=${"+data[list]+"}'>";
+                $("#listView").append(pages);
+                $("#listView").append(postList);
+
 
             }).fail(function(error){
                 alert(JSON.stringify(error));
@@ -165,10 +202,10 @@ var main = {
             $.ajax({
                 type: 'GET',
                 url: '/api/v1/posts/category/'+cateId+'/writer/'+userId,
-                dataType: 'json',
-                contentType: 'application/json; charset=utf-8'
+                dataType: 'json'
 
             }).done(function(data){
+                /*
                 var table = "<h3>나의 게시글</h3><table><thead><tr>";
 
                 console.log(data);
@@ -186,7 +223,10 @@ var main = {
                 table += "</tbody></thead></table>";
 
                 $("#myTable").html(table);
-                // $().html() 또는 .append() !!
+                */
+
+                var postList = "<div th:with='postList=${"+data[list]+"}'>";
+                $("#listView").append(postList);
 
             }).fail(function(error){
                 alert(JSON.stringify(error));
@@ -200,10 +240,10 @@ var main = {
             $.ajax({
                 type: 'GET',
                 url: '/api/v1/posts/likes/category/' + cateId,
-                dataType: 'json',
-                contentType: 'application/json; charset=utf-8'
+                dataType: 'json'
 
             }).done(function(data){
+                /*
                 var table = "<h3>베스트 게시글</h3><table><thead><tr>";
 
                 console.log(data);
@@ -219,6 +259,9 @@ var main = {
                 table += "</tbody></thead></table>";
 
                 $("#bestTable").html(table);
+                */
+                var bestPosts = "<div th:with='bestPosts=${"+data+"}'>";
+                $("#listView").append(bestPosts);
 
             }).fail(function(error){
                 alert(JSON.stringify(error));

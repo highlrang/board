@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<div layout:fragment="content" style="width: 100%; height:100px; text-align: center;">
+<div layout:fragment="content">
 
     this area is home - content.
 
@@ -34,8 +34,13 @@
         </div>
 
         <div>
-            <a class="btn btn-light" th:href="@{/category/list}">카테고리 목록</a>
-            <a class="btn btn-light" th:href="@{/logout}">로그아웃</a>
+            <span th:each="category : ${categories}">
+                <span>
+                    <a th:href="@{/post/list(cateId=${category.id})}" th:text="${category.name}"></a>
+                </span>
+            </span>
+
+            <div><a class="btn btn-light" th:href="@{/logout}">로그아웃</a></div>
         </div>
 
 

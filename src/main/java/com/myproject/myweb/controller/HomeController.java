@@ -1,5 +1,8 @@
 package com.myproject.myweb.controller;
 
+import com.myproject.myweb.domain.Category;
+import com.myproject.myweb.dto.CategoryResponseDto;
+import com.myproject.myweb.service.CategoryService;
 import com.myproject.myweb.service.user.UserService;
 import com.myproject.myweb.dto.user.UserRequestDto;
 import com.myproject.myweb.dto.user.UserResponseDto;
@@ -12,22 +15,27 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 @Slf4j
 @RequiredArgsConstructor
 @Controller
 public class HomeController {
     private final UserService userService;
+    private final CategoryService categoryService;
     private final HttpSession session;
 
     @RequestMapping("/")
     public String home(Model model){
-        UserResponseDto user = (UserResponseDto) session.getAttribute("user");
 
+        UserResponseDto user = (UserResponseDto) session.getAttribute("user");
         if(user != null) {
             model.addAttribute("user", user);
         }
-        return "home";
+
+        return "layout/basic";
     }
 
     @GetMapping("/login")
@@ -61,7 +69,7 @@ public class HomeController {
 
         } catch (IllegalArgumentException e) {
 
-            if(e.getMessage() == "UserAlreadyExistException"){
+            if(e.getMessage().equals("UserAlreadyExistException")){
                 result.rejectValue("email", "userDuplicate", "이미 존재하는 회원 이메일입니다.");
                 return "user/register";
             }
@@ -69,6 +77,12 @@ public class HomeController {
             return "user/register";
         }
 
+    }
+
+    @GetMapping("/myPage/{userId}")
+    public String myPage(@PathVariable("userId") Long userId){
+        // userId
+        return "mypage";
     }
 
 }

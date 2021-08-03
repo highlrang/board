@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="https://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/basic">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-    <script src="/js/index.js"></script>
 </head>
 <body>
     <script>
@@ -16,14 +16,25 @@
             }
         });
     </script>
+    <div layout:fragment="content">
     <form>
-        <div><input type="text" id="title" th:value="${post.title}"/></div>
-        <div><textarea id="content" th:text="${post.content}"></textarea></div>
+        <div class="mb-3">
+            <input class="form-control" type="text" placeholder="제목" id="title" th:value="${post.title}">
+        </div>
+        <div class="mb-3">
+            <textarea class="form-control" id="content" rows="3" th:text="${post.content}"></textarea>
+        </div>
 
-        <div>공개 여부 : <input type="checkbox" id="isPublic" th:checked="${post.isPublic == true}"></div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="isPublic" th:checked="${post.isPublic == true}">
+            <label class="form-check-label" for="isPublic">
+                공개 여부
+            </label>
+        </div>
 
         <input type="hidden" id="id" th:value="${post.id}"/>
-        <div><input type="button" id="post-update" value="게시글 저장"/></div>
+        <div><input type="button" class="btn btn-light" id="post-update" value="게시글 저장"/></div>
     </form>
+    </div>
 </body>
 </html>

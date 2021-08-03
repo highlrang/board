@@ -10,19 +10,19 @@ import lombok.Getter;
 @Getter
 public class PostByLikeCountQueryDto {
     private Long postId;
-    private String categoryName;
-    private String postTitle;
-    private String writerName;
+    private String category;
+    private String title;
+    private String writer;
     private Boolean isComplete;
-    private Long postLikeCount;
+    private Long likeCount;
 
-    public PostByLikeCountQueryDto(Long postId, String categoryName, String postTitle,
-                                   String writerName, Boolean isComplete, Long postLikeCount){
+    public PostByLikeCountQueryDto(Long postId, String category, String title,
+                                   String writer, Boolean isComplete, Long likeCount){
         this.postId = postId;
-        this.categoryName = categoryName;
-        this.postTitle = postTitle;
-        this.writerName = writerName;
+        this.category = category;
+        this.title = title;
+        this.writer = writer;
         this.isComplete = isComplete;
-        this.postLikeCount = postLikeCount;
+        this.likeCount = likeCount;
     }
 }

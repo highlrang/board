@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="https://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/basic">
 
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-    <script src="/js/index.js"></script>
 </head>
 <body>
     <script>
@@ -18,16 +18,26 @@
             console.log($('#isPublic').val());
         });
     </script>
+    <div layout:fragment="content">
     <form>
-        <div></div><input type="text" id="title"/></div>
-        <div><textarea id="content"></textarea></div>
-        <div>공개 여부 <input type="checkbox" id="isPublic" checked></div>
-        <!-- th:checked -->
-
+        <div class="mb-3">
+            <input class="form-control" type="text" placeholder="제목" id="title">
+        </div>
+        <div class="mb-3">
+            <textarea class="form-control" id="content" rows="3"></textarea>
+        </div>
+        기능 되는지 확인
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="isPublic" checked>
+            <label class="form-check-label" for="isPublic">
+                공개 여부
+            </label>
+        </div>
 
         <input type="hidden" id="userId" th:value="${userId}"/>
         <input type="hidden" id="categoryId" th:value="${cateId}"/>
-        <input type="button" id="post-save" value="게시글 저장"/>
+        <input type="button" class="btn btn-light" id="post-save" value="게시글 저장"/>
     </form>
+    </div>
 </body>
 </html>

@@ -180,12 +180,12 @@ public class PostService {
     private Map<String, List<Long>> getPostIdMap() {
         List<PostByLikeCountQueryDto> allPosts =
                 postQuerydslRepository.findAllPostsByLikeAndCategoryAndComplete(null, false);
-        allPosts.sort(Comparator.comparing(PostByLikeCountQueryDto::getPostLikeCount));
+        allPosts.sort(Comparator.comparing(PostByLikeCountQueryDto::getLikeCount));
 
         // category로 묶기
         Map<String, List<Long>> postIds = new HashMap<>();
         allPosts.stream()
-                .collect(Collectors.groupingBy(PostByLikeCountQueryDto::getCategoryName))
+                .collect(Collectors.groupingBy(PostByLikeCountQueryDto::getCategory))
                 .forEach((key, value) -> postIds.put(key, value.stream().map(PostByLikeCountQueryDto::getPostId).collect(Collectors.toList())));
 
         return postIds;
