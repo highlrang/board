@@ -16,8 +16,8 @@ var main = {
         init : function () {
             var _this = this;
 
-            $(document).ready(function(){
-                _this.categoryList();
+            $(document).on('click', '#cate-list', function(){
+                _this.categorylist();
             });
 
             $(document).on('click', '#post-save', function(){
@@ -49,7 +49,7 @@ var main = {
             });
         },
 
-        categoryList : function(){
+        categorylist : function(){
             $.ajax({
                 type: 'GET',
                 url: '/api/v1/category',
@@ -57,8 +57,14 @@ var main = {
 
             }).done(function(data){
                 console.log(data);
-                // var categoryList = "<div th:with='categories=${"+data+"}'>";
-                // $("#header").append(categoryList); //replaceWith
+
+                var categoryList = "";
+                $.each(data, function(index, category){
+                    categoryList += "<a class='nav-link' href='/post/list?cateId="
+                    + category.id + "'>" + category.name + "</a>";
+                });
+
+                $("#categoryList").replaceWith(categoryList);
 
             }).fail(function (error) {
                 alert(JSON.stringify(error));
@@ -146,21 +152,16 @@ var main = {
                 dataType: 'json'
 
             }).done(function(data){
-                /*
-                var table = "<h3>전체 게시글</h3><table><thead><tr>";
-
-                console.log(data["count"]);
-                // for(var key in data[0]){
-                table += "<th>제목</th><th>작성자</th><th>열람</th></tr><tbody>";
-
-                // $.each(object, function(index, alias){}
+                console.log(data);
+                var table = "<tbody id='tableBody'>";
                 $.each(data["list"], function(index, post){
-                    table += "<tr><td>"+post.title+"</td><td>"+post.writer+
-                    "</td><td><a href='#' onclick='goDetail(" + post.id +
-                    ")'>열람</a></td></tr>";
+                    var i = parseInt(index) + 1;
+                    table += "<tr><th scope='row'>" + i + "</th>"
+                    + "<td><a href='/post/detail/" + post.id + "'>"
+                    + post.title + "</a></td>"
+                    + "<td>"+post.writer+"</td></tr>";
                 });
-
-                table += "</tbody></thead></table><span>";
+                table += "</tbody>";
 
                 var cnt;
                 if(data["count"] % 10 == 0){
@@ -169,24 +170,14 @@ var main = {
                     cnt = parseInt(data["count"] / 10) + 1;
                 }
 
+                var pages = "<span id='pages'>";
                 for(var i = 1; i < cnt + 1; i++){
-                    table += "<input type='button' name='page' value='" + i + "'/>";
+                    pages += "<input type='button' name='page' value='" + i + "'/>";
                 }
+                pages += "</span>"
 
-                table += "</span>";
-                $("#allTable").html(table);
-                */
-
-                var cnt;
-                if(data["count"] % 10 == 0){
-                    cnt = data["count"] / 10;
-                }else{
-                    cnt = parseInt(data["count"] / 10) + 1;
-                }
-                var pages = "<div th:with='pages=${"+cnt+"}'>";
-                var postList = "<div th:with='postList=${"+data[list]+"}'>";
-                $("#listView").append(pages);
-                $("#listView").append(postList);
+                $("#tableBody").replaceWith(table);
+                $("#pages").replaceWith(pages);
 
 
             }).fail(function(error){
@@ -205,28 +196,32 @@ var main = {
                 dataType: 'json'
 
             }).done(function(data){
-                /*
-                var table = "<h3>나의 게시글</h3><table><thead><tr>";
-
                 console.log(data);
-                // for(var key in data[0]){
-                table += "<th>제목</th><th>작성자</th><th>열람</th></tr><tbody>";
-
-
-                // $.each(object, function(index, alias){}
-                $.each(data, function(index, post){
-                    table += "<tr><td>"+post.title+"</td><td>"+post.writer+
-                    "</td><td><a href='#' onclick='goMyDetail(" + post.id +
-                    ")'>열람</a></td></tr>";
+                var table = "<tbody id='tableBody'>";
+                $.each(data["list"], function(index, post){
+                    var i = parseInt(index) + 1;
+                    table += "<tr><th scope='row'>" + i + "</th>"
+                    + "<td><a href='/post/detail/" + post.id + "'>"
+                    + post.title + "</a></td>"
+                    + "<td>"+post.writer+"</td></tr>";
                 });
+                table += "</tbody>";
 
-                table += "</tbody></thead></table>";
+                var cnt;
+                if(data["count"] % 10 == 0){
+                    cnt = data["count"] / 10;
+                }else{
+                    cnt = parseInt(data["count"] / 10) + 1;
+                }
 
-                $("#myTable").html(table);
-                */
+                var pages = "<span id='pages'>";
+                for(var i = 1; i < cnt + 1; i++){
+                    pages += "<input type='button' name='page' value='" + i + "'/>";
+                }
+                pages += "</span>";
 
-                var postList = "<div th:with='postList=${"+data[list]+"}'>";
-                $("#listView").append(postList);
+                $("#tableBody").replaceWith(table);
+                $("#pages").replaceWith(pages);
 
             }).fail(function(error){
                 alert(JSON.stringify(error));
@@ -239,29 +234,23 @@ var main = {
 
             $.ajax({
                 type: 'GET',
-                url: '/api/v1/posts/likes/category/' + cateId,
+                url: '/api/v1/posts/best-likes/category/' + cateId,
                 dataType: 'json'
 
             }).done(function(data){
-                /*
-                var table = "<h3>베스트 게시글</h3><table><thead><tr>";
-
                 console.log(data);
-                table += "<th>제목</th><th>작성자</th><th>좋아요</th><th>열람</th></tr><tbody>";
-
+                var table = "<tbody id='bastTableBody'>";
                 $.each(data, function(index, post){
-                    table += "<tr><td>"+post.postTitle+"</td><td>"+post.writerName+
-                    "</td><td>"+post.postLikeCount+
-                    "</td><td><a href='#' onclick='goDetail(" + post.postId +
-                    ")'>열람</a></td></tr>";
+                    var i = parseInt(index) + 1;
+                    table += "<tr><th scope='row'>" + i + "</th>"
+                    + "<td><a href='/post/detail/" + post.id + "'>"
+                    + post.title + "</a></td>"
+                    + "<td>" + post.writer + "</td>"
+                    + "<td>" + post.likeCount + "</td></tr>";
                 });
+                table += "</tbody>";
 
-                table += "</tbody></thead></table>";
-
-                $("#bestTable").html(table);
-                */
-                var bestPosts = "<div th:with='bestPosts=${"+data+"}'>";
-                $("#listView").append(bestPosts);
+                $("#bestTableBody").replaceWith(table);
 
             }).fail(function(error){
                 alert(JSON.stringify(error));

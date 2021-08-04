@@ -186,7 +186,7 @@ public class PostService {
         Map<String, List<Long>> postIds = new HashMap<>();
         allPosts.stream()
                 .collect(Collectors.groupingBy(PostByLikeCountQueryDto::getCategory))
-                .forEach((key, value) -> postIds.put(key, value.stream().map(PostByLikeCountQueryDto::getPostId).collect(Collectors.toList())));
+                .forEach((key, value) -> postIds.put(key, value.stream().map(PostByLikeCountQueryDto::getId).collect(Collectors.toList())));
 
         return postIds;
     }

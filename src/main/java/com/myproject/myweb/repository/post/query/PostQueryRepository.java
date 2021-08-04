@@ -50,7 +50,7 @@ public class PostQueryRepository {
         // postId로 정렬
         Map<Long, List<PostLikeQueryDto>> postLikeMap =
                 likes.stream()
-                .collect(Collectors.groupingBy(PostLikeQueryDto::getPostId));
+                .collect(Collectors.groupingBy(PostLikeQueryDto::getId));
         return postLikeMap;
     }
 

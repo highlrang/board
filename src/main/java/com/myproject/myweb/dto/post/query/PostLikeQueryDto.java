@@ -8,14 +8,14 @@ import lombok.Getter;
 public class PostLikeQueryDto {
 
     @JsonIgnore
-    private Long postId;
+    private Long id;
 
     private Long likeUserId;
     private String likeUserEmail;
     private String likeUserName;
 
     public PostLikeQueryDto(Long postId, Long likeUserId, String likeUserEmail, String likeUserName){
-        this.postId = postId;
+        this.id = postId;
         this.likeUserId = likeUserId;
         this.likeUserEmail = likeUserEmail;
         this.likeUserName = likeUserName;

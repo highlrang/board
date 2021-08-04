@@ -7,6 +7,7 @@
     <title>Title</title>
 </head>
 <body>
+<div layout:fragment="content">
     <style>
         .unliked{
             border-bottom: 1px gray solid;
@@ -54,61 +55,58 @@
             }
         }
     </script>
-
-
-    <div layout:fragment="content">
-        <div class="input-group mb-3">
-            <span class="input-group-text" id="c">카테고리</span>
-            <input type="text" th:text="${post.category}" class="form-control" aria-label="Sizing example input" aria-describedby="c">
-        </div>
-
-        <div class="input-group mb-3">
-            <span class="input-group-text">제목</span>
-            <input type="text" th:text="${post.title}" class="form-control">
-        </div>
-
-        <div class="input-group mb-3">
-            <span class="input-group-text">작성자</span>
-            <input type="text" th:text="${post.writer}" class="form-control">
-        </div>
-
-        <div class="input-group mb-3">
-            <span class="input-group-text">내용</span>
-            <textarea class="form-control" th:text="${post.content}" aria-label="With textarea"></textarea>
-        </div>
-
-
-        <div class="badge bg-light text-wrap" style="width: 6rem;">
-            <a th:text='|게시글 좋아요 - ${post.totalLike} 개|' href="#" onclick="clickLikeList()"></a>
-        </div>
-        <div id="likes" style="display:none;">
-            <ul class="list-group list-group-flush">
-                <span th:each="like : ${post.likes}">
-                    <li class="list-group-item" th:text="${like.userName}"></li>
-                </span>
-            </ul>
-        </div>
-
-        <div th:if='${post.isComplete == true }'>
-            <div class="badge bg-blue-200 text-wrap" style="width: 6rem;">
-                8rem? 해결완료
-            </div>
-        </div>
-        <div th:if='${post.isComplete == false }'>
-            <div class="badge bg-blue-200 text-wrap" style="width: 6rem;">
-                미해결 상태
-            </div>
-        </div>
-
-        <span th:if="${myPost == true}">
-            <div>
-                <input type="button" class="btn btn-light" th:onclick="'goPostUpdate('+${post.id}+')'" value="수정"/>
-                <input type="button" class="btn btn-light" id="post-delete" value="삭제"/>
-            </div>
-        </span>
-        <span th:if="${myPost == false}">
-            <div><input type="button" class="btn btn-light" id="like-push" value="좋아요" class="unliked"/></div>
-        </span>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="c">카테고리</span>
+        <input type="text" th:text="${post.category}" class="form-control" aria-label="Sizing example input" aria-describedby="c">
     </div>
+
+    <div class="input-group mb-3">
+        <span class="input-group-text">제목</span>
+        <input type="text" th:text="${post.title}" class="form-control">
+    </div>
+
+    <div class="input-group mb-3">
+        <span class="input-group-text">작성자</span>
+        <input type="text" th:text="${post.writer}" class="form-control">
+    </div>
+
+    <div class="input-group mb-3">
+        <span class="input-group-text">내용</span>
+        <textarea class="form-control" th:text="${post.content}" aria-label="With textarea"></textarea>
+    </div>
+
+
+    <div class="badge bg-light text-wrap" style="width: 6rem;">
+        <a th:text='|게시글 좋아요 - ${post.totalLike} 개|' href="#" onclick="clickLikeList()"></a>
+    </div>
+    <div id="likes" style="display:none;">
+        <ul class="list-group list-group-flush">
+            <span th:each="like : ${post.likes}">
+                <li class="list-group-item" th:text="${like.userName}"></li>
+            </span>
+        </ul>
+    </div>
+
+    <div th:if='${post.isComplete == true }'>
+        <div class="badge bg-blue-200 text-wrap" style="width: 6rem;">
+            8rem? 해결완료
+        </div>
+    </div>
+    <div th:if='${post.isComplete == false }'>
+        <div class="badge bg-blue-200 text-wrap" style="width: 6rem;">
+            미해결 상태
+        </div>
+    </div>
+
+    <span th:if="${myPost == true}">
+        <div>
+            <input type="button" class="btn btn-light" th:onclick="'goPostUpdate('+${post.id}+')'" value="수정"/>
+            <input type="button" class="btn btn-light" id="post-delete" value="삭제"/>
+        </div>
+    </span>
+    <span th:if="${myPost == false}">
+        <div><input type="button" class="btn btn-light unliked" id="like-push" value="좋아요"/></div>
+    </span>
+</div>
 </body>
 </html>

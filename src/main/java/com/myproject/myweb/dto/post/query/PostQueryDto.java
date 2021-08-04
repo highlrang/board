@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 @Getter
-@NoArgsConstructor // 없어도 될 듯
 public class PostQueryDto {
     private Long postId;
     private String cateName;

@@ -7,43 +7,42 @@
     <title>Title</title>
 </head>
 <body>
-<script>
-    $(document).ready(function(){
-        $('#post-best').click();
-        $('#post-list').click();
-    });
+<div layout:fragment="content">
+    <script>
+        $(document).ready(function(){
+            $('#post-best').click();
+            $('#post-list').click();
+        });
 
-    $(document).on('click', '#post-mylist', function(){
-        $('#myPost').css('display', 'none');
-        $('#allPost').css('display', 'block');
+        $(document).on('click', '#post-mylist', function(){
+            $('#myPost').css('display', 'none');
+            $('#allPost').css('display', 'block');
 
-        $('#myTable').css('display', 'block');
-        $('#allTable').css('display', 'none');
+            $('#myTable').css('display', 'block');
+            $('#allTable').css('display', 'none');
 
-    });
+        });
 
-    $(document).on('click', '#post-list', function(){
-        $('#allPost').css('display', 'none');
-        $('#myPost').css('display', 'block');
+        $(document).on('click', '#post-list', function(){
+            $('#allPost').css('display', 'none');
+            $('#myPost').css('display', 'block');
 
-        $('#allTable').css('display', 'block');
-        $('#myTable').css('display', 'none');
+            $('#allTable').css('display', 'block');
+            $('#myTable').css('display', 'none');
 
-    });
+        });
 
-    $(document).on('click', "input[name='page']", function(){
-        var page = $(this).val() - 1;
-        $('#offset').val(page*10);
-        $('#post-list').click();
-    });
+        $(document).on('click', "input[name='page']", function(){
+            var page = $(this).val() - 1;
+            $('#offset').val(page*10);
+            $('#post-list').click();
+        });
 
-    function goDetail(id){
-        location.href='/post/detail/' + id;
+        function goDetail(id){
+            location.href='/post/detail/' + id;
+        }
+    </script>
 
-    }
-</script>
-
-<div layout:fragment="content" id="listView">
     <div><a class="btn btn-light" th:href="@{/post/create(cateId=${cateId})}">게시글 생성</a></div>
 
     <div>
@@ -71,30 +70,13 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th scope="col"></th>
+                        <th scope="col">#</th>
                         <th scope="col">제목</th>
                         <th scope="col">작성자</th>
                         <th scope="col">좋아요</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <span th:each="post, i: ${bestPosts}">
-                            <th scope="row">${i.count}</th>
-                            <td>
-                                <span th:text="${post.title}"></span>
-                            </td>
-                            <td>
-                                <span th:text="${post.writer}"></span>
-                            </td>
-                            <td>
-                                <span th:text="${post.likeCount}"></span>
-                            </td>
-                            <td>
-                                <span onclick="'goDetail('+${post.postId}+')'">열람</span>
-                            </td>
-                        </span>
-                    </tr>
+                <tbody id="bestTableBody">
                 </tbody>
             </table>
 
@@ -103,32 +85,16 @@
             <table class="table">
                 <thead>
                     <tr>
+                        <th scope="col">#</th>
                         <th scope="col">제목</th>
                         <th scope="col">작성자</th>
-                        <th scope="col">열람</th>
                     </tr>
                 </thead>
 
-                <tbody>
-                    <tr>
-                        <span th:each="post, i: ${postList}">
-                            <th scope="row">${i.count}</th>
-                            <td>
-                                <span th:text="${post.title}"></span>
-                            </td>
-                            <td>
-                                <span th:text="${post.writer}"></span>
-                            </td>
-                            <td>
-                                <span th:onclick="'goDetail('+${post.postId}+')'" th:text="열람"></span>
-                            </td>
-                        </span>
-                    </tr>
+                <tbody id="tableBody">
                 </tbody>
             </table>
-            <span th:each="page: ${#numbers.sequence(1,pages)}">
-                <input type="button" name="page" th:value="${page}">
-            </span>
+            <span id="pages"></span>
         </span>
     </div>
 
