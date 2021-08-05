@@ -37,16 +37,12 @@
             $('#offset').val(page*10);
             $('#post-list').click();
         });
-
-        function goDetail(id){
-            location.href='/post/detail/' + id;
-        }
     </script>
 
     <div><a class="btn btn-light" th:href="@{/post/create(cateId=${cateId})}">게시글 생성</a></div>
 
     <div>
-        <input type="hidden" th:value="${userId}" id="userId"/>
+        <input type="hidden" th:value="${session.user.id}" id="userId"/>
         <input type="hidden" th:value="${cateId}" id="cateId"/>
         <input type="hidden" id="offset" value="0"/>
         <input type="hidden" id="limit"/>

@@ -10,6 +10,7 @@ import com.myproject.myweb.dto.user.UserResponseDto;
 import com.myproject.myweb.service.PostService;
 import com.myproject.myweb.dto.post.PostResponseDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/post")
@@ -28,13 +30,8 @@ public class PostController {
     @GetMapping("/create")
     public String postCreateForm(@RequestParam("cateId") Long cateId,
                                  @ModelAttribute PostRequestDto postRequestDto, // 자동으로 넘어감
-                                 Model model,
-                                 @AuthenticationPrincipal User user){
-
-        UserResponseDto sessionUser = (UserResponseDto)session.getAttribute("user");
+                                 Model model){
         model.addAttribute("cateId", cateId);
-        model.addAttribute("userId", sessionUser.getId());
-
         return "post/create";
     }
 
@@ -45,34 +42,30 @@ public class PostController {
     }
 
     @GetMapping("/detail/{id}") // ?key=value는 RequestParam
-    public String postDetail(@PathVariable Long id, Model model) {
+    public String postDetail(@PathVariable Long id, Model model) { // @AuthenticationPrincipal userDetailService랑 같이
         PostDetailResponseDto post = postService.findById(id);
         model.addAttribute("post", post);
 
         UserResponseDto user = (UserResponseDto) session.getAttribute("user");
-        if(user != null) {
-            if (post.getWriterId().equals(user.getId())) model.addAttribute("myPost", true);
+        if (post.getWriterId().equals(user.getId())) {
+            model.addAttribute("myPost", true);
+        }else {
             Boolean alreadyLiked = post.getLikes()
                     .stream().anyMatch(l -> l.getUserId().equals(user.getId()));
             model.addAttribute("alreadyLiked", alreadyLiked);
         }
-
         return "post/detail";
     }
 
     @GetMapping("/list")
     public String postList(@RequestParam("cateId") Long cateId, Model model){
-        model.addAttribute("cateId", cateId);
-        postService.findAllByCategory(cateId);
-
-        UserResponseDto user = (UserResponseDto)session.getAttribute("user");
-        model.addAttribute("userId", user.getId());
+        model.addAttribute("cateId", cateId); // 후에 API로
         return "post/list";
     }
 
-    @GetMapping("/list/mine")
+    @GetMapping("/list/mine") // 없애도 됨
     public String myPostList(@RequestParam("cateId") Long cateId, Model model){
-        User writer = (User)session.getAttribute("user");
+        User writer = (User)session.getAttribute("user"); // authenticationPrincipal과 session의 차이?
         List<PostResponseDto> posts = postService.findAllMine(cateId, writer.getId());
         model.addAttribute("posts", posts);
         return "post/list";

@@ -24,17 +24,9 @@ import java.util.Locale;
 @Controller
 public class HomeController {
     private final UserService userService;
-    private final CategoryService categoryService;
-    private final HttpSession session;
 
     @RequestMapping("/")
     public String home(Model model){
-
-        UserResponseDto user = (UserResponseDto) session.getAttribute("user");
-        if(user != null) {
-            model.addAttribute("user", user);
-        }
-
         return "layout/basic";
     }
 

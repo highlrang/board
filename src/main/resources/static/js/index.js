@@ -87,9 +87,9 @@ var main = {
                 contentType:'application/json; charset=utf-8',
                 data: JSON.stringify(data)
 
-            }).done(function() {
+            }).done(function(data) {
                 alert('글이 등록되었습니다.');
-                window.location.href = '/';
+                window.location.href = '/post/detail/' + data["id"];
 
             }).fail(function (error) {
                 alert(JSON.stringify(error));
@@ -198,7 +198,7 @@ var main = {
             }).done(function(data){
                 console.log(data);
                 var table = "<tbody id='tableBody'>";
-                $.each(data["list"], function(index, post){
+                $.each(data, function(index, post){ // data["list"]
                     var i = parseInt(index) + 1;
                     table += "<tr><th scope='row'>" + i + "</th>"
                     + "<td><a href='/post/detail/" + post.id + "'>"
@@ -207,6 +207,7 @@ var main = {
                 });
                 table += "</tbody>";
 
+                /*
                 var cnt;
                 if(data["count"] % 10 == 0){
                     cnt = data["count"] / 10;
@@ -219,9 +220,11 @@ var main = {
                     pages += "<input type='button' name='page' value='" + i + "'/>";
                 }
                 pages += "</span>";
+                $("#pages").replaceWith(pages);
+                */
 
                 $("#tableBody").replaceWith(table);
-                $("#pages").replaceWith(pages);
+
 
             }).fail(function(error){
                 alert(JSON.stringify(error));

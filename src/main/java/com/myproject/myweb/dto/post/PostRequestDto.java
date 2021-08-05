@@ -11,17 +11,14 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotNull;
 
 @Getter
-public class PostRequestDto {
-    @NotNull
+@NoArgsConstructor
+public class PostRequestDto { // @NotNull
     private Long writerId;
-    @NotNull
     private Long categoryId;
-    @NotNull
     private String title;
     private String content;
     private Boolean isPublic;
 
-    // <save>
     @Builder
     public PostRequestDto(Long categoryId, Long writerId, String title, String content, Boolean isPublic){
         this.categoryId = categoryId;
@@ -31,6 +28,14 @@ public class PostRequestDto {
         this.isPublic = isPublic;
     }
 
+    /*
+    @Builder
+    public PostRequestDto(String title, String content, Boolean isPublic){
+        this.title = title;
+        this.content = content;
+        this.isPublic = isPublic;
+    }
+    */
 
     public Post toEntity(){ // Dto로 Post 빌더 호출 >> category와 writer는 id로 entity 찾아서 이후에 add
         Post post = Post.builder()

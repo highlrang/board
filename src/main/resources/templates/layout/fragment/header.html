@@ -28,11 +28,11 @@
                         <a class="nav-link" th:href="@{/post/list(cateId=${category.id})}" th:text="${category.name}"></a>
                     </span>
                     -->
-                    <span th:if="${user==null}">
+                    <span th:if="${session.user==null}">
                         <a class="nav-link" href="/login">Login</a>
                     </span>
-                    <span th:if="${user!=null}">
-                        <a class="nav-link" th:href="@{/myPage(userId=${user.id})}">MyPage</a>
+                    <span th:if="${session.user!=null}">
+                        <a class="nav-link" th:href="@{/myPage(userId=${session.user.id})}">MyPage</a>
                     </span>
                 </div>
             </div>
