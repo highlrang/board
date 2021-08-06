@@ -179,7 +179,7 @@ public class PostService {
 
     private Map<String, List<Long>> getPostIdMap() {
         List<PostByLikeCountQueryDto> allPosts =
-                postQuerydslRepository.findAllPostsByLikeAndCategoryAndComplete(null, false);
+                postQuerydslRepository.findAllPostsByLikeAndCategoryAndComplete(null, false, -1);
         allPosts.sort(Comparator.comparing(PostByLikeCountQueryDto::getLikeCount));
 
         // category로 묶기

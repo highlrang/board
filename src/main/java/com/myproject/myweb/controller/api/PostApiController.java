@@ -88,12 +88,14 @@ public class PostApiController {
     }
 
     @GetMapping("/api/v1/posts/category/{cateId}/writer/{writerId}")
-    public List<PostListDto> postsByCategoryAndWriterV1(@PathVariable("cateId") Long cateId,
-                                                    @PathVariable("writerId") Long writerId){
-        List<Post> entity = postRepository.findAllByCategory_IdAndWriter_Id(cateId, writerId);
+    public Result<PostListDto> postsByCategoryAndWriterV1(@PathVariable("cateId") Long cateId,
+                                                        @PathVariable("writerId") Long writerId,
+                                                        @RequestParam(value = "offset", defaultValue = "0") int offset){
+        List<Post> entity = postQuerydslRepository.findAllWithCategoryAndWriterAndPagingByFetch(cateId, writerId, offset);
         List<PostListDto> posts = toPostListDtos(entity);
 
-        return posts;
+        Long count = postRepository.countByCategory_IdAndWriter_Id(cateId, writerId);
+        return new Result(count, posts);
     }
 
     @GetMapping("/api/v1/posts/writer/{writerId}")
@@ -218,13 +220,17 @@ public class PostApiController {
     }
 
     @GetMapping("/api/v1/posts/best-likes/category/{cateId}")
-    public List<PostByLikeCountQueryDto> postsByLikeAndCategoryV1(@PathVariable(value="cateId") Long cateId){
-        return postQuerydslRepository.findAllPostsByLikeAndCategoryAndComplete(cateId, null);
+    public Result postsByLikeAndCategoryV1(@PathVariable(value="cateId") Long cateId,
+                                           @RequestParam(value="offset", defaultValue = "0") int offset
+    ){
+        List<PostByLikeCountQueryDto> bestPosts = postQuerydslRepository.findAllPostsByLikeAndCategoryAndComplete(cateId, null, offset);
+        Long count = postQuerydslRepository.countBestPosts(cateId);
+        return new Result(count, bestPosts);
     }
 
-    @GetMapping("/api/v1/posts/by/best-likes/category/{cateId}/for-complete")
+    @GetMapping("/api/v1/posts/best-likes/category/{cateId}/for-complete")
     public List<PostByLikeCountQueryDto> postsByLikeAndCompleteV1(@PathVariable(value="cateId") Long cateId){
-        return postQuerydslRepository.findAllPostsByLikeAndCategoryAndComplete(cateId, false);
+        return postQuerydslRepository.findAllPostsByLikeAndCategoryAndComplete(cateId, false, -1);
     }
 
     @GetMapping("/api/v1/posts/admin/matching")

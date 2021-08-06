@@ -15,9 +15,9 @@ public class CommonExceptionHandler {
     public String BadRequestException(IllegalStateException e, Model model) { // exception 변수에 final 붙이는 이유
 
         model.addAttribute("error", e.getMessage());
-        log.warn("error", e.getMessage());
+        log.warn("error = " + e.getMessage());
 
-        return "error";
+        return "error/error";
     }
 
     // api exception return json >> ResponseEntity<Object> ..

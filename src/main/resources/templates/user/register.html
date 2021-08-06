@@ -8,32 +8,41 @@
 </head>
 <body>
 <div layout:fragment="content">
-  <form action="/register" method="post">
+  <form action="/register" method="post" th:object="${userRequestDto}">
 
-      <div>
-        <input type="text" placeholder="이메일" name="email"/>
-        <span th:if="${#fields.hasErrors('email')}">
-          <span th:errors="*{email}"></span>
-        </span>
+      <div class="row">
+          <div class="col-sm-10">
+              <input type="text" placeholder="Email" th:field="*{email}" class="form-control"/>
+              <span th:if="${#fields.hasErrors('email')}">
+                  <span th:errors="*{email}"></span>
+              </span>
+          </div>
       </div>
 
-      <div>
-        <input type="password" placeholder="비밀번호" name="password"/>
-        <span th:if="${#fields.hasErrors('password')}">
-            <span th:errors="*{password}"></span>
-        </span>
+      <div class="row">
+          <div class="col-sm-10">
+              <input type="password" placeholder="Password" th:field="*{password}" class="form-control"/>
+              <span th:if="${#fields.hasErrors('password')}">
+                  <span th:errors="*{password}"></span>
+              </span>
+          </div>
       </div>
 
-      <div>
-        <input type="text" placeholder="닉네임" name="userName"/>
-        <span th:if="${#fields.hasErrors('userName')}">
-          <span th:errors="*{userName}"></span>
-        </span>
+      <div class="row">
+          <div class="col-sm-10">
+              <input type="text" placeholder="Name" th:field="*{name}" class="form-control"/>
+              <span th:if="${#fields.hasErrors('name')}">
+                  <span th:errors="*{name}"></span>
+              </span>
+          </div>
       </div>
 
-      <div>
-        <input type="submit" value="회원가입"/>
+      <div class="row">
+          <div class="col-md-4">
+              <input type="submit" class="btn btn-light" value="회원가입"/>
+          </div>
       </div>
+
   </form>
 </div>
 </body>

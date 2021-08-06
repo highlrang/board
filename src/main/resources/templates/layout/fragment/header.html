@@ -32,7 +32,7 @@
                         <a class="nav-link" href="/login">Login</a>
                     </span>
                     <span th:if="${session.user!=null}">
-                        <a class="nav-link" th:href="@{/myPage(userId=${session.user.id})}">MyPage</a>
+                        <a class="nav-link" href="/mypage">MyPage</a>
                     </span>
                 </div>
             </div>

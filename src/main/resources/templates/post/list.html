@@ -35,7 +35,19 @@
         $(document).on('click', "input[name='page']", function(){
             var page = $(this).val() - 1;
             $('#offset').val(page*10);
-            $('#post-list').click();
+
+            if($('#allPost').css('display') == 'none'){
+                $('#post-list').click();
+            }else{
+                $('#post-mylist').click();
+            }
+        });
+
+        $(document).on('click', "input[name='bestPostPage']", function(){
+            var page = $(this).val() - 1;
+            $('#offset').val(page*10);
+
+            $('#post-best').click();
         });
     </script>
 
@@ -75,9 +87,10 @@
                 <tbody id="bestTableBody">
                 </tbody>
             </table>
-
+            <span id="bestPostPages"></span>
         </div>
-        <span id="postTable">
+
+        <div id="postTable">
             <table class="table">
                 <thead>
                     <tr>
@@ -91,7 +104,7 @@
                 </tbody>
             </table>
             <span id="pages"></span>
-        </span>
+        </div>
     </div>
 
 </div>

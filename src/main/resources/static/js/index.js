@@ -130,8 +130,7 @@ var main = {
 
             $.ajax({
                 type: 'DELETE',
-                url: '/api/v1/posts/'+id,
-                dataType: 'json'
+                url: '/api/v1/posts/'+id
 
             }).done(function(){
                 alert('글이 삭제되었습니다.');
@@ -153,31 +152,39 @@ var main = {
 
             }).done(function(data){
                 console.log(data);
-                var table = "<tbody id='tableBody'>";
-                $.each(data["list"], function(index, post){
-                    var i = parseInt(index) + 1;
-                    table += "<tr><th scope='row'>" + i + "</th>"
-                    + "<td><a href='/post/detail/" + post.id + "'>"
-                    + post.title + "</a></td>"
-                    + "<td>"+post.writer+"</td></tr>";
-                });
-                table += "</tbody>";
 
-                var cnt;
-                if(data["count"] % 10 == 0){
-                    cnt = data["count"] / 10;
+                if(data["count"] == 0){
+                    $("#postTable").css('display', 'none');
+
                 }else{
-                    cnt = parseInt(data["count"] / 10) + 1;
-                }
+                    $('#postTable').css('display', 'block');
 
-                var pages = "<span id='pages'>";
-                for(var i = 1; i < cnt + 1; i++){
-                    pages += "<input type='button' name='page' value='" + i + "'/>";
-                }
-                pages += "</span>"
+                    var table = "<tbody id='tableBody'>";
+                    $.each(data["list"], function(index, post){
+                        var i = parseInt(index) + 1;
+                        table += "<tr><th scope='row'>" + i + "</th>"
+                        + "<td><a href='/post/detail/" + post.id + "'>"
+                        + post.title + "</a></td>"
+                        + "<td>"+post.writer+"</td></tr>";
+                    });
+                    table += "</tbody>";
 
-                $("#tableBody").replaceWith(table);
-                $("#pages").replaceWith(pages);
+                    var cnt;
+                    if(data["count"] % 10 == 0){
+                        cnt = data["count"] / 10;
+                    }else{
+                        cnt = parseInt(data["count"] / 10) + 1;
+                    }
+
+                    var pages = "<span id='pages'>";
+                    for(var i = 1; i < cnt + 1; i++){
+                        pages += "<input type='button' name='page' value='" + i + "'/>";
+                    }
+                    pages += "</span>";
+
+                    $("#tableBody").replaceWith(table);
+                    $("#pages").replaceWith(pages);
+                }
 
 
             }).fail(function(error){
@@ -189,42 +196,47 @@ var main = {
         mylist : function(){
             var cateId = $('#cateId').val();
             var userId = $('#userId').val();
+            var offset = $('#offset').val();
 
             $.ajax({
                 type: 'GET',
-                url: '/api/v1/posts/category/'+cateId+'/writer/'+userId,
+                url: '/api/v1/posts/category/'+cateId+'/writer/'+userId+"?offset="+offset,
                 dataType: 'json'
 
             }).done(function(data){
                 console.log(data);
-                var table = "<tbody id='tableBody'>";
-                $.each(data, function(index, post){ // data["list"]
-                    var i = parseInt(index) + 1;
-                    table += "<tr><th scope='row'>" + i + "</th>"
-                    + "<td><a href='/post/detail/" + post.id + "'>"
-                    + post.title + "</a></td>"
-                    + "<td>"+post.writer+"</td></tr>";
-                });
-                table += "</tbody>";
 
-                /*
-                var cnt;
-                if(data["count"] % 10 == 0){
-                    cnt = data["count"] / 10;
+                if(data["count"] == 0){
+                    $("#postTable").css('display', 'none');
                 }else{
-                    cnt = parseInt(data["count"] / 10) + 1;
+                    $('#postTable').css('display', 'block');
+
+                    var table = "<tbody id='tableBody'>";
+                    $.each(data["list"], function(index, post){
+                        var i = parseInt(index) + 1;
+                        table += "<tr><th scope='row'>" + i + "</th>"
+                        + "<td><a href='/post/detail/" + post.id + "'>"
+                        + post.title + "</a></td>"
+                        + "<td>"+post.writer+"</td></tr>";
+                    });
+                    table += "</tbody>";
+
+                    var cnt;
+                    if(data["count"] % 10 == 0){
+                        cnt = data["count"] / 10;
+                    }else{
+                        cnt = parseInt(data["count"] / 10) + 1;
+                    }
+
+                    var pages = "<span id='pages'>";
+                    for(var i = 1; i < cnt + 1; i++){
+                        pages += "<input type='button' name='page' value='" + i + "'/>";
+                    }
+                    pages += "</span>";
+
+                    $("#pages").replaceWith(pages);
+                    $("#tableBody").replaceWith(table);
                 }
-
-                var pages = "<span id='pages'>";
-                for(var i = 1; i < cnt + 1; i++){
-                    pages += "<input type='button' name='page' value='" + i + "'/>";
-                }
-                pages += "</span>";
-                $("#pages").replaceWith(pages);
-                */
-
-                $("#tableBody").replaceWith(table);
-
 
             }).fail(function(error){
                 alert(JSON.stringify(error));
@@ -234,26 +246,47 @@ var main = {
 
         bestlist : function(){
             var cateId = $('#cateId').val();
+            var offset = $('#offset').val();
 
             $.ajax({
                 type: 'GET',
-                url: '/api/v1/posts/best-likes/category/' + cateId,
+                url: '/api/v1/posts/best-likes/category/' + cateId + "?offset=" + offset,
                 dataType: 'json'
 
             }).done(function(data){
                 console.log(data);
-                var table = "<tbody id='bastTableBody'>";
-                $.each(data, function(index, post){
-                    var i = parseInt(index) + 1;
-                    table += "<tr><th scope='row'>" + i + "</th>"
-                    + "<td><a href='/post/detail/" + post.id + "'>"
-                    + post.title + "</a></td>"
-                    + "<td>" + post.writer + "</td>"
-                    + "<td>" + post.likeCount + "</td></tr>";
-                });
-                table += "</tbody>";
 
-                $("#bestTableBody").replaceWith(table);
+                if(data["count"] == 0){
+                    $("#bestTable").css('display', 'none');
+                }else{
+
+                    var table = "<tbody id='bastTableBody'>";
+                    $.each(data["list"], function(index, post){
+                        var i = parseInt(index) + 1;
+                        table += "<tr><th scope='row'>" + i + "</th>"
+                        + "<td><a href='/post/detail/" + post.id + "'>"
+                        + post.title + "</a></td>"
+                        + "<td>" + post.writer + "</td>"
+                        + "<td>" + post.likeCount + "</td></tr>";
+                    });
+                    table += "</tbody>";
+
+                    var cnt;
+                    if(data["count"] % 10 == 0){
+                        cnt = data["count"] / 10;
+                    }else{
+                        cnt = parseInt(data["count"] / 10) + 1;
+                    }
+
+                    var pages = "<span>";
+                    for(var i = 1; i < cnt + 1; i++){
+                        pages += "<input type='button' name='bestPostPage' value='" + i + "'/>";
+                    }
+                    pages += "</span>";
+
+                    $("#bestTableBody").replaceWith(table);
+                    $("#bestPostPages").replaceWith(pages);
+                }
 
             }).fail(function(error){
                 alert(JSON.stringify(error));

@@ -28,8 +28,8 @@ public class PostQuerydslRepositoryTest {
         postQuerydslRepository.findAllWithCategoryAndPublicAndPagingByFetch(2L, 0);
 
 
-        List<PostByLikeCountQueryDto> posts = postQuerydslRepository.findAllPostsByLikeAndCategoryAndComplete(2L, null);
-        posts.forEach(p -> System.out.println(p.getPostTitle() + p.getIsComplete()));
+        List<PostByLikeCountQueryDto> posts = postQuerydslRepository.findAllPostsByLikeAndCategoryAndComplete(2L, null, 0);
+        posts.forEach(p -> System.out.println(p.getTitle() + p.getIsComplete()));
 
     }
 }

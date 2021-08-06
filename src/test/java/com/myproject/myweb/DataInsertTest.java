@@ -131,18 +131,18 @@ public class DataInsertTest {
     @Test
     public void 카테고리정렬미해결게시글(){
         List<PostByLikeCountQueryDto> allPostsByLikeAndComplete =
-                postQuerydslRepository.findAllPostsByLikeAndCategoryAndComplete(22L, false);
+                postQuerydslRepository.findAllPostsByLikeAndCategoryAndComplete(22L, false, 0);
         // 20
         Map<String, List<PostByLikeCountQueryDto>> posts = allPostsByLikeAndComplete.stream()
-                .sorted(Comparator.comparing(PostByLikeCountQueryDto::getPostLikeCount))
-                .collect(Collectors.groupingBy(PostByLikeCountQueryDto::getCategoryName));
+                .sorted(Comparator.comparing(PostByLikeCountQueryDto::getLikeCount))
+                .collect(Collectors.groupingBy(PostByLikeCountQueryDto::getCategory));
 
         for(Map.Entry<String, List<PostByLikeCountQueryDto>> entry: posts.entrySet()){
             for(PostByLikeCountQueryDto p: entry.getValue()) {
                 System.out.println("카테고리 : " + entry.getKey() +
-                        " 제목 : " + p.getPostTitle() +
-                        " 작성자 : " + p.getWriterName() +
-                        " 좋아요수 : " + p.getPostLikeCount());
+                        " 제목 : " + p.getTitle() +
+                        " 작성자 : " + p.getWriter() +
+                        " 좋아요수 : " + p.getLikeCount());
             }
         }
     }

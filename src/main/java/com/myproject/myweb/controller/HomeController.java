@@ -1,6 +1,7 @@
 package com.myproject.myweb.controller;
 
 import com.myproject.myweb.domain.Category;
+import com.myproject.myweb.domain.user.User;
 import com.myproject.myweb.dto.CategoryResponseDto;
 import com.myproject.myweb.service.CategoryService;
 import com.myproject.myweb.service.user.UserService;
@@ -13,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.Arrays;
@@ -47,19 +49,20 @@ public class HomeController {
     }
 
     @PostMapping("/register") // 커맨드객체 @RequestParam or @ModelAttribute - 생략 가능
-    public String register(@Valid UserRequestDto user, BindingResult result) {
+    public String register(@Valid UserRequestDto userRequestDto, BindingResult result) {
+        // setter로 입력됨
 
         if(result.hasErrors()){
-            // email 필드에 에러 있으면 메세지 담김
+            // 필드에 에러 있으면 메세지 담김
             return "user/register";
         }
 
         try{
-            userService.join(user);
+            userService.join(userRequestDto);
             return "user/registered";
 
 
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalStateException e) {
 
             if(e.getMessage().equals("UserAlreadyExistException")){
                 result.rejectValue("email", "userDuplicate", "이미 존재하는 회원 이메일입니다.");
@@ -71,10 +74,17 @@ public class HomeController {
 
     }
 
-    @GetMapping("/myPage/{userId}")
-    public String myPage(@PathVariable("userId") Long userId){
-        // userId
-        return "mypage";
+    @GetMapping("/mypage")
+    public String mypage(){
+        return "user/mypage";
+    }
+
+    @GetMapping("/signout")
+    public String signout(HttpSession session){
+        UserResponseDto user = (UserResponseDto) session.getAttribute("user");
+        userService.signOut(user.getId());
+        session.invalidate();
+        return "redirect:/";
     }
 
 }
