@@ -21,6 +21,8 @@
             $('#myTable').css('display', 'block');
             $('#allTable').css('display', 'none');
 
+            $('#h4-title').text('나의 게시글');
+
         });
 
         $(document).on('click', '#post-list', function(){
@@ -29,6 +31,8 @@
 
             $('#allTable').css('display', 'block');
             $('#myTable').css('display', 'none');
+
+            $('#h4-title').text('전체 게시글');
 
         });
 
@@ -46,65 +50,153 @@
         $(document).on('click', "input[name='bestPostPage']", function(){
             var page = $(this).val() - 1;
             $('#offset').val(page*10);
-
             $('#post-best').click();
         });
+
+        function previousBestPage(){
+            var page = $("input[name='bestPostPage']:first").val();
+            if(page != 1){
+                page = page - 10;
+                $("input[name='bestPostPage']").each(function(index, item){
+                    $(item).val(page);
+                    page += 1;
+                });
+            }
+        }
+
+        function nextBestPage(){
+            var page = $("input[name='bestPostPage']:last").val();
+            var last = $("#bestPostPages").val();
+
+            if (page != last){
+                $("input[name='bestPostPage']").each(function(index, item){
+                    if(page > last){
+                        $(item).remove();
+                    }else{
+                        page = parseInt(page) + 1;
+                        $(item).val(page);
+                    }
+                });
+            }
+        }
+
+        function previousPage(){
+            var page = $("input[name='page']:first").val();
+            if(page != 1){
+                page = page - 10;
+                $("input[name='page']").each(function(index, item){
+                    $(item).val(page);
+                    page += 1;
+                });
+            }
+        }
+
+        function nextPage(){
+            var page = $("input[name='page']:last").val();
+            var last = $("#pages").val();
+
+            if (page != last){
+                $("input[name='page']").each(function(index, item){
+                    if(page > last){
+                        $(item).remove();
+                    }else{
+                        page = parseInt(page) + 1;
+                        $(item).val(page);
+                    }
+                });
+            }
+        }
     </script>
 
-    <div><a class="btn btn-light" th:href="@{/post/create(cateId=${cateId})}">게시글 생성</a></div>
+    <div class="mb-3" style="float: right"><a class="btn btn-light" th:href="@{/post/create(cateId=${cateId})}">게시글 생성</a></div>
 
     <div>
         <input type="hidden" th:value="${session.user.id}" id="userId"/>
         <input type="hidden" th:value="${cateId}" id="cateId"/>
         <input type="hidden" id="offset" value="0"/>
         <input type="hidden" id="limit"/>
+    </div>
 
-        <span style="display: none">
-            <input type="button" id="post-best"/>
-        </span>
 
-        <span id="myPost" style="display: block">
-            <input type="button" class="btn btn-light" id="post-mylist" value="나의 게시글 조회"/>
-        </span>
-        <span id="allPost" style="display: none">
-            <input type="button" class="btn btn-light" id="post-list" value="전체 게시글 조회"/>
+    <div class="mb-3" style="clear: both;" id="bestTable">
+        <h4>베스트 게시글</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">제목</th>
+                    <th scope="col">작성자</th>
+                    <th scope="col">좋아요</th>
+                </tr>
+            </thead>
+            <tbody id="bestTableBody">
+            </tbody>
+        </table>
+
+        <span id="bestPostPages">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <a class="page-link" onclick="previousBestPage()" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li id="bestPostPage"></li>
+                    <li class="page-item">
+                        <a class="page-link" onclick="nextBestPage()" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </span>
 
     </div>
 
-    <div>
-        <div id="bestTable">
-            <h3>베스트 게시글</h3>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">제목</th>
-                        <th scope="col">작성자</th>
-                        <th scope="col">좋아요</th>
-                    </tr>
-                </thead>
-                <tbody id="bestTableBody">
-                </tbody>
-            </table>
-            <span id="bestPostPages"></span>
-        </div>
+    <div class="mb-3">
+        <span style="display: none">
+            <input type="button" id="post-best"/>
+        </span>
 
-        <div id="postTable">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">제목</th>
-                        <th scope="col">작성자</th>
-                    </tr>
-                </thead>
+        <span id="myPost" style="clear:both; float: right; display: block">
+            <input type="button" class="btn btn-light" id="post-mylist" value="나의 게시글 조회"/>
+        </span>
 
-                <tbody id="tableBody">
-                </tbody>
-            </table>
-            <span id="pages"></span>
-        </div>
+        <span id="allPost" style="clear:both; float: right; display: none">
+            <input type="button" class="btn btn-light" id="post-list" value="전체 게시글 조회"/>
+        </span>
+    </div>
+
+    <div id="postTable" style="clear: both;">
+        <h4 id="h4-title"></h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">제목</th>
+                    <th scope="col">작성자</th>
+                </tr>
+            </thead>
+
+            <tbody id="tableBody"></tbody>
+        </table>
+        <span id="pages">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <a class="page-link" onclick="previousPage()" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li id="page"></li>
+                    <li class="page-item">
+                        <a class="page-link" onclick="nextPage()" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </span>
     </div>
 
 </div>

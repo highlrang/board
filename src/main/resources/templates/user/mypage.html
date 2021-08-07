@@ -8,12 +8,13 @@
 </head>
 <body>
     <div layout:fragment="content">
-        <div>
+        <div class="mb-5">
             <div th:text="${session.user.name}"></div>
             <div th:text="${session.user.email}"></div>
             <div th:text="${session.user.roleTitle}"></div>
         </div>
-        <div>
+
+        <div class="mb-5">
             <a href="/logout" class="btn btn-light">로그아웃</a>
         </div>
 

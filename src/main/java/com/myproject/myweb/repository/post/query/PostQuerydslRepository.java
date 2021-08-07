@@ -46,6 +46,7 @@ public class PostQuerydslRepository {
 
     }
 
+    // mylist paging
     public List<Post> findAllWithCategoryAndWriterAndPagingByFetch(Long cateId, Long userId, int offset){
         List<Post> fetch = jpaQueryFactory.selectFrom(post)
                 .innerJoin(post.category, category)
@@ -60,6 +61,7 @@ public class PostQuerydslRepository {
         return fetch;
     }
 
+    // bestlist paging
     public List<PostByLikeCountQueryDto> findAllPostsByLikeAndCategoryAndComplete(Long cateId, Boolean isComplete, int offset) {
         JPAQuery<PostByLikeCountQueryDto> jpaQuery = jpaQueryFactory.select(Projections.constructor(PostByLikeCountQueryDto.class, post.id, category.name, post.title, user.name, post.isPublic, like.count()))
                 .from(post)

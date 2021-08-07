@@ -30,16 +30,19 @@
             <textarea class="form-control" id="content" rows="3"></textarea>
         </div>
 
-        <div class="form-check">
+        <div class="mb-3 form-check">
             <input class="form-check-input" type="checkbox" id="isPublic" value="true" checked>
             <label class="form-check-label" for="isPublic">
                 공개 여부
             </label>
         </div>
 
-        <input type="hidden" id="userId" th:value="${session.user.id}"/>
-        <input type="hidden" id="categoryId" th:value="${cateId}"/>
-        <input type="button" class="btn btn-light" id="post-save" value="게시글 저장"/>
+        <div>
+            <input type="hidden" id="userId" th:value="${session.user.id}"/>
+            <input type="hidden" id="categoryId" th:value="${cateId}"/>
+            <input type="button" class="btn btn-light" id="post-save" value="게시글 저장"/>
+        </div>
+
     </form>
     </div>
 </body>

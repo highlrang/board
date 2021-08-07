@@ -8,38 +8,24 @@
 </head>
 <body>
 <div layout:fragment="content">
-    <style>
-        .unliked{
-            border-bottom: 1px gray solid;
-            color : gray;
-            background-color: white;
-        }
-
-        .liking{
-            border: none;
-            border-bottom: 1px red solid;
-            color : red;
-            background-color: white;
-        }
-    </style>
     <script>
-
         $(document).ready(function(){
             var al = $("#alreadyLiked").val();
             var like = $("#like-push");
             if (al == "true"){
-                like.removeClass('unliked').addClass('liking');
+                like.addClass('btn btn-outline-danger');
             }else{
-                like.removeClass('liking').addClass('unliked');
+                like.addClass('btn btn-outline-dark');
             }
         });
 
         $(document).on('click', '#like-push', function(){
             var like = $('#like-push');
             if(like.hasClass('unliked')){
-                like.removeClass('unliked').addClass('liking');
+                // like.attr('class', 'liking');
+                like.removeClass('btn btn-outline-dark').addClass('btn btn-outline-danger');
             }else{
-                like.removeClass('liking').addClass('unliked');
+                like.removeClass('btn btn-outline-danger').addClass('btn btn-outline-dark');
             }
         });
 
@@ -52,10 +38,12 @@
             }
         }
     </script>
-
-    <input type="hidden" id="postId" th:value="${post.id}">
-    <input type="hidden" id="userId" th:value="${session.user.id}">
-    <input type="hidden" id="categoryId" th:value="${post.categoryId}">
+    <div>
+        <input type="hidden" id="postId" th:value="${post.id}">
+        <input type="hidden" id="userId" th:value="${session.user.id}">
+        <input type="hidden" id="categoryId" th:value="${post.categoryId}">
+        <input type="hidden" id="alreadyLiked" th:value="${alreadyLiked}">
+    </div>
 
     <div class="input-group mb-3">
         <span class="input-group-text" id="c">카테고리</span>
