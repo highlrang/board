@@ -28,8 +28,9 @@ var main = {
             console.log(data);
             listAfter(data);
 
-        }).fail(function(error){
-            alert(JSON.stringify(error));
+        }).fail(function(request, error){
+            var url = errorProcess(request, error);
+            window.location.href = url + "PostListError";
         });
 
     },
@@ -48,8 +49,9 @@ var main = {
             console.log(data);
             listAfter(data);
 
-        }).fail(function(error){
-            alert(JSON.stringify(error));
+        }).fail(function(request, error){
+            var url = errorProcess(request, error);
+            window.location.href = url + "PostMyListError";
         });
 
     },
@@ -110,8 +112,9 @@ var main = {
                 $("#bestTable").css('display', 'block');
             }
 
-        }).fail(function(error){
-            alert(JSON.stringify(error));
+        }).fail(function(request, error){
+            var url = errorProcess(request, error);
+            window.location.href = url + "PostBestListError";
         });
 
     }

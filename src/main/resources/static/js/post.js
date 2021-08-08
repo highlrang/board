@@ -39,8 +39,9 @@ var main = {
             alert('글이 등록되었습니다.');
             window.location.href = '/post/detail/' + data["id"];
 
-        }).fail(function (error) {
-            alert(JSON.stringify(error));
+        }).fail(function (request, error) {
+            var url = errorProcess(request, error);
+            window.location.href = url + "PostSaveError";
         });
 
     },
@@ -64,8 +65,9 @@ var main = {
             alert('글이 수정되었습니다.');
             window.location.href= '/post/detail/' + id;
 
-        }).fail(function(error){
-            alert(JSON.stringify(error));
+        }).fail(function(request, error){
+            var url = errorProcess(request, error);
+            window.location.href = url + "PostUpdateError";
         });
 
     },
@@ -83,8 +85,9 @@ var main = {
             alert('글이 삭제되었습니다.');
             window.location.href='/post/list?cateId='+categoryId;
 
-        }).fail(function(error){
-            alert(JSON.stringify(error));
+        }).fail(function(request, error){
+            var url = errorProcess(request, error);
+            window.location.href = url + "PostDeleteError";
         });
     },
 
@@ -105,10 +108,25 @@ var main = {
         }).done(function(){
             window.location.href = '/post/detail/' + id;
 
-        }).fail(function(error){
-            alert(JSON.stringify(error));
+        }).fail(function(request, error){
+            var url = errorProcess(request, error);
+            window.location.href = url + "LikePushError";
         });
     }
 };
+
+function errorProcess(request, error){
+    var url = "";
+    var status = "";
+
+    if(request.status==404 || request.status==500){
+        status = request.status;
+    }else{
+        status = error;
+    }
+
+    url = "/errored?status=" + status + "&location=";
+    return url;
+}
 
 main.init();

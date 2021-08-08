@@ -38,8 +38,11 @@ var main = {
 
             $("#categoryList").replaceWith(categoryList);
 
-        }).fail(function (error) {
-            alert(JSON.stringify(error));
+        }).fail(function (request, error) {
+            // JSON.stringify(error)
+
+            var url = errorProcess(request, error);
+            window.location.href = url + "CategoryError";
         });
     }
 };

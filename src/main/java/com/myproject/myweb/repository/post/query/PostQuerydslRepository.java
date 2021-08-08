@@ -73,13 +73,26 @@ public class PostQuerydslRepository {
                 .having(like.count().goe(5))
                 .orderBy(like.count().desc());
 
-        if(offset >= 0) { // 전체 전달일 경우 페이징 처리 ㄴㄴ
+        if(offset >= 0) { // 전체 데이터 전달일 경우 페이징 처리 ㄴㄴ
             jpaQuery.offset(offset).limit(10);
         }
 
         List<PostByLikeCountQueryDto> fetch = jpaQuery.fetch();
         return fetch;
     }
+
+    /*
+    페이징 관련 데이터
+        총 데이터 개수, 한 페이지에 보여질 데이터 개수,
+        총 페이지 개수, 한 페이지에 보여질 페이지 개수,
+        시작점은 == 현재 페이지 번호 * 한 페이지의 데이터 개수
+        끝점은 == 시작점 + 한 페이지의 데이터 개수
+        이전 페이지는 == (첫 번째 페이지 - 한 페이지에 보여질 페이지 개수)
+                        >> 한 페이지에 보여질 페이지 개수만큼 +1
+        다음 페이지는 == (마지막 페이지 + 1)
+                        >> 한 페이지에 보열질 개수만큼 + 1
+                           but 총 페이지 개수에 도달하면 멈춤
+     */
 
     public Long countBestPosts(Long cateId){
         List<Post> fetch = jpaQueryFactory.selectFrom(post)
