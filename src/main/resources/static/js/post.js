@@ -40,8 +40,7 @@ var main = {
             window.location.href = '/post/detail/' + data["id"];
 
         }).fail(function (request, error) {
-            var url = errorProcess(request, error);
-            window.location.href = url + "PostSaveError";
+            window.location.href='/error';
         });
 
     },
@@ -66,8 +65,7 @@ var main = {
             window.location.href= '/post/detail/' + id;
 
         }).fail(function(request, error){
-            var url = errorProcess(request, error);
-            window.location.href = url + "PostUpdateError";
+            window.location.href='/error';
         });
 
     },
@@ -86,8 +84,7 @@ var main = {
             window.location.href='/post/list?cateId='+categoryId;
 
         }).fail(function(request, error){
-            var url = errorProcess(request, error);
-            window.location.href = url + "PostDeleteError";
+            window.location.href='/error';
         });
     },
 
@@ -109,13 +106,12 @@ var main = {
             window.location.href = '/post/detail/' + id;
 
         }).fail(function(request, error){
-            var url = errorProcess(request, error);
-            window.location.href = url + "LikePushError";
+            window.location.href='/error';
         });
     }
 };
 
-function errorProcess(request, error){
+function errorProcess(request, error, location){ // fail 시
     var url = "";
     var status = "";
 
@@ -125,8 +121,8 @@ function errorProcess(request, error){
         status = error;
     }
 
-    url = "/errored?status=" + status + "&location=";
-    return url;
+    window.location.href = "/errored?status=" + status + "&location=" + location;
+    // return url;
 }
 
 main.init();

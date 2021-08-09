@@ -18,9 +18,9 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
 
     // 전달 파라미터 하나일 때
     // @Query("SELECT count(l) FROM Like l WHERE l.post.writer = (SELECT u FROM User u WHERE u.id = :userId)")
-    Optional<Long> countAllByPost_Writer(User user); // id가 아닌 writer 전달
+    Long countAllByPost_Writer(User user); // id가 아닌 writer 전달
     // left join 날림 but select one(count) 이기에 성능 차이 없음
-    Optional<Long> countAllByPost_Id(Long postId);
+    Long countAllByPost_Id(Long postId);
 
     // 자동 쿼리 생성
     // @Query("select l from Like l where l.user.id =:userId)

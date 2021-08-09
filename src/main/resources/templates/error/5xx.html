@@ -1,10 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="https://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/basic">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
-<h1> 서버 에러입니다. </h1>
+<div layout:fragment="content">
+    <h1> 안타깝지만, 서버에 오류가 있습니다. </h1>
+
+    <div th:text="${timestamp}"></div>
+    <div th:text="${status}"></div>
+    <div th:text="${path}"></div>
+</div>
 </body>
 </html>

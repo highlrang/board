@@ -33,9 +33,9 @@ public class LikeService {
     @Transactional
     public Long save(LikeRequestDto likeRequestDto){
         Post post = postRepository.findById(likeRequestDto.getPostId())
-                .orElseThrow(IllegalStateException::new);
+                .orElseThrow(() -> new IllegalStateException("PostNotFoundException"));
         User user = userRepository.findById(likeRequestDto.getUserId())
-                .orElseThrow(IllegalStateException::new);
+                .orElseThrow(() -> new IllegalStateException("UserNotFoundException"));
 
         Long id = likeRepository.save(
                 Like.builder()
@@ -69,7 +69,7 @@ public class LikeService {
     @Transactional
     public void delete(Long id){
         Like like = likeRepository.findById(id)
-                .orElseThrow(IllegalStateException::new);
+                .orElseThrow(() -> new IllegalStateException("LikeNotFoundException"));
 
         like.getPost().likeDelete(like);
         like.getUser().likeDelete(like);
@@ -80,15 +80,14 @@ public class LikeService {
 
     // 특정 게시글 좋아요 개수 - controller detail 뷰에 넣기
     public Long findLikeInPost(Long postId){
-        return likeRepository.countAllByPost_Id(postId)
-                .orElseThrow(IllegalStateException::new);
+        return likeRepository.countAllByPost_Id(postId); // sum은 null, count는 0
     }
 
     // user가 자신의 게시글로 받은 모든 like 개수
     public Long findLikeInUser(Long userId){
         User user = userRepository.findById(userId)
-                .orElseThrow(IllegalStateException::new);
-        return likeRepository.countAllByPost_Writer(user) // user entity로 넘기기
-                .orElseThrow(IllegalStateException::new);
+                .orElseThrow(() -> new IllegalStateException("UserNotFoundException"));
+        return likeRepository.countAllByPost_Writer(user); // user entity로 넘기기
+
     }
 }

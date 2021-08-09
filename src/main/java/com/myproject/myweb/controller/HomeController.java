@@ -20,7 +20,6 @@ import javax.validation.Valid;
 @Controller
 public class HomeController {
     private final UserService userService;
-    private final MessageSource messageSource;
 
     @RequestMapping("/")
     public String home(Model model){
@@ -60,7 +59,7 @@ public class HomeController {
         } catch (IllegalStateException e) {
 
             if(e.getMessage().equals("UserAlreadyExistException")){
-                result.rejectValue("email", "userDuplicate", "이미 존재하는 회원 이메일입니다.");
+                result.rejectValue("email", "UserAlreadyExistException");
                 return "user/register";
             }
 
@@ -71,6 +70,7 @@ public class HomeController {
 
     @GetMapping("/mypage")
     public String mypage(){
+        // 테스트용 throw new IllegalStateException();
         return "user/mypage";
     }
 
@@ -80,35 +80,6 @@ public class HomeController {
         userService.signOut(user.getId());
         session.invalidate();
         return "redirect:/";
-    }
-
-    @GetMapping("/errored")
-    public String error(@RequestParam("status") String status,
-                        @RequestParam("location") String location,
-                        Model model){
-        String error = "";
-
-        if(status.equals("404")) {
-            return "error/4xx";
-        }else if(status.equals("500")){
-            return "error/5xx";
-
-        }else if(status.equals("parsererror")) {
-            error = "데이터를 알맞은 형태로 가공하는 데에 어려움이 있습니다.";
-        }else if(status.equals("timeout")){
-            error = "시간이 초과되었습니다. 응답을 기다리는 것에 무리가 있습니다.";
-
-        }else{
-            log.info("unknown error = " + status);
-        }
-
-        String locationMessage = messageSource.getMessage(location, null, null);
-        //  new String[]{"arg1"},  Locale.KOREA
-        log.info("error = " + error + " location = " + locationMessage);
-
-        model.addAttribute("error", error);
-        model.addAttribute("location", locationMessage);
-        return "error/error";
     }
 
 }

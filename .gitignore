@@ -8,6 +8,4 @@
 /src/main/resources/application*
 
 .gradle
-gradlew
-gradlew.bat
 .idea

@@ -1,11 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="https://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/basic">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
-<h1> 클라이언트 에러입니다. </h1>
+<div layout:fragment="content">
+    <h1> 잘못된 요청입니다. 다시 한 번 확인해주세요. </h1>
+
+    <div th:text="${timestamp}"></div>
+    <div th:text="${status}"></div>
+    <div th:text="${path}"></div>
+</div>
 
 </body>
 </html>

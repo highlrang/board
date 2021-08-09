@@ -41,8 +41,7 @@ var main = {
         }).fail(function (request, error) {
             // JSON.stringify(error)
 
-            var url = errorProcess(request, error);
-            window.location.href = url + "CategoryError";
+            window.location.href='/error';
         });
     }
 };

@@ -29,8 +29,7 @@ var main = {
             listAfter(data);
 
         }).fail(function(request, error){
-            var url = errorProcess(request, error);
-            window.location.href = url + "PostListError";
+            window.location.href='/error';
         });
 
     },
@@ -50,8 +49,7 @@ var main = {
             listAfter(data);
 
         }).fail(function(request, error){
-            var url = errorProcess(request, error);
-            window.location.href = url + "PostMyListError";
+            window.location.href='/error';
         });
 
     },
@@ -113,8 +111,7 @@ var main = {
             }
 
         }).fail(function(request, error){
-            var url = errorProcess(request, error);
-            window.location.href = url + "PostBestListError";
+            window.location.href='/error';
         });
 
     }

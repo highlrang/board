@@ -18,7 +18,9 @@ import com.myproject.myweb.dto.post.PostResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -223,9 +225,12 @@ public class PostApiController {
     public Result postsByLikeAndCategoryV1(@PathVariable(value="cateId") Long cateId,
                                            @RequestParam(value="offset", defaultValue = "0") int offset
     ){
+        // 테스트용 throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+
         List<PostByLikeCountQueryDto> bestPosts = postQuerydslRepository.findAllPostsByLikeAndCategoryAndComplete(cateId, null, offset);
         Long count = postQuerydslRepository.countBestPosts(cateId);
         return new Result(count, bestPosts);
+
     }
 
     @GetMapping("/api/v1/posts/best-likes/category/{cateId}/for-complete")

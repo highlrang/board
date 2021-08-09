@@ -1,14 +1,16 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="https://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/basic">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
+<div layout:fragment="content">
+    <div>오류가 발생했습니다.</div>
 
-    <h1> 데이터를 찾는 과정에서 오류가 발생했습니다. </h1>
-    <div th:text="${location}"></div>
-    <div th:text="${error}"></div>
-
+    <div th:text="|원인 - ${error}|"></div>
+</div>
 </body>
 </html>
