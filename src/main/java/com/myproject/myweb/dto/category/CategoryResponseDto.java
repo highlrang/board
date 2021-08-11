@@ -1,4 +1,4 @@
-package com.myproject.myweb.dto;
+package com.myproject.myweb.dto.category;
 
 import com.myproject.myweb.domain.Category;
 import lombok.Getter;

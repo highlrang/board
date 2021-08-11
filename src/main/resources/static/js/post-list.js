@@ -110,7 +110,8 @@ var main = {
                 $("#bestTable").css('display', 'block');
             }
 
-        }).fail(function(request, error){
+        }).fail(function(error){
+            // alert(JSON.stringify(error));
             window.location.href='/error';
         });
 

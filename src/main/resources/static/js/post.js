@@ -111,18 +111,5 @@ var main = {
     }
 };
 
-function errorProcess(request, error, location){ // fail 시
-    var url = "";
-    var status = "";
-
-    if(request.status==404 || request.status==500){
-        status = request.status;
-    }else{
-        status = error;
-    }
-
-    window.location.href = "/errored?status=" + status + "&location=" + location;
-    // return url;
-}
 
 main.init();

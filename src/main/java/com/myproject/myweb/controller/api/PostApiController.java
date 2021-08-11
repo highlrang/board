@@ -192,10 +192,10 @@ public class PostApiController {
         // fetch join 안 한 likes만 stream()으로 lazy 초기화 필요 // 데이터 하나니까 1 + n 걱정 안하기
 
         Post entity = postRepository.findByIdFetch(id)
-                .orElseThrow(IllegalStateException::new);
+                .orElseThrow(() -> new IllegalStateException("PostNotFoundException"));
 
         PostDto post = new PostDto(entity); // repository에서 해야 영속성 유지되는 거 아님??!
-        post.addTotalLike(likeRepository.countAllByPost_Id(post.getId()).get());
+        post.addTotalLike(likeRepository.countAllByPost_Id(post.getId()));
 
         return post;
     }
@@ -212,7 +212,7 @@ public class PostApiController {
         postService.update(id, postRequestDto); // findById(영속성 컨텍스트)는 service에서 다룸
 
         PostDetailResponseDto postDetailResponseDto = postService.findById(id);
-        postDetailResponseDto.addTotalLike(likeRepository.countAllByPost_Id(postDetailResponseDto.getId()).get());
+        postDetailResponseDto.addTotalLike(likeRepository.countAllByPost_Id(postDetailResponseDto.getId()));
         return postDetailResponseDto;
     }
 
@@ -225,8 +225,6 @@ public class PostApiController {
     public Result postsByLikeAndCategoryV1(@PathVariable(value="cateId") Long cateId,
                                            @RequestParam(value="offset", defaultValue = "0") int offset
     ){
-        // 테스트용 throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
-
         List<PostByLikeCountQueryDto> bestPosts = postQuerydslRepository.findAllPostsByLikeAndCategoryAndComplete(cateId, null, offset);
         Long count = postQuerydslRepository.countBestPosts(cateId);
         return new Result(count, bestPosts);

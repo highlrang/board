@@ -5,6 +5,7 @@ import com.myproject.myweb.domain.user.Role;
 import com.myproject.myweb.domain.user.User;
 import com.myproject.myweb.dto.post.query.PostByLikeCountQueryDto;
 import com.myproject.myweb.dto.user.query.WriterByLikeCountQueryDto;
+import com.myproject.myweb.exception.ArgumentException;
 import com.myproject.myweb.repository.like.LikeRepository;
 import com.myproject.myweb.repository.like.query.LikeQueryRepository;
 import com.myproject.myweb.repository.like.query.LikeQuerydslRepository;
@@ -34,7 +35,7 @@ public class UserApiController {
     public List<UserListDto> usersV1(){
         List<User> users = userRepository.findAll();
         List<UserListDto> result = users.stream()
-                .map(u -> new UserListDto(u))
+                .map(UserListDto::new)
                 .collect(Collectors.toList());
 
         Map<Long, Long> likeCounts = getLikeCountsByUserIds(getUserIds(result));
@@ -45,7 +46,7 @@ public class UserApiController {
     }
 
     private List<Long> getUserIds(List<UserListDto> result) {
-        List<Long> userIds = result.stream().map(u -> u.getUserId()).collect(Collectors.toList());
+        List<Long> userIds = result.stream().map(UserListDto::getUserId).collect(Collectors.toList());
         return userIds;
     }
 
@@ -54,22 +55,25 @@ public class UserApiController {
         return likeCounts;
     }
 
-    @GetMapping("/api/v1/users/role/{role}") // ?NORMAL_USER
+    @GetMapping("/api/v1/users/role/{role}") // NORMAL_USER
     public List<UserListDto> usersByRoleV1(@PathVariable(value = "role") String role){
 
-        // Role에 있는지 valid 필요
-        Role validRole = Role.valueOf(role);
+        Role validRole;
+        try{
+            validRole = Role.valueOf(role);
+            List<User> users = userRepository.findByRole(validRole);
+            List<UserListDto> result = users.stream()
+                    .map(UserListDto::new)
+                    .collect(Collectors.toList());
 
-        List<User> users = userRepository.findByRole(validRole);
-        List<UserListDto> result = users.stream()
-                .map(u -> new UserListDto(u))
-                .collect(Collectors.toList());
+            Map<Long, Long> likeCounts = getLikeCountsByUserIds(getUserIds(result));
+            result.forEach(u -> u.addTotalLike(likeCounts.get(u.getUserId())));
 
-        Map<Long, Long> likeCounts = getLikeCountsByUserIds(getUserIds(result));
-        result.forEach(u -> u.addTotalLike(likeCounts.get(u.getUserId())));
+            return result;
 
-        return result;
-
+        }catch(IllegalArgumentException e){
+            throw new ArgumentException("ArgumentNotValidException", role);
+        }
         // return userQueryRepository.findAllUsersByDto(Role.valueOf(role));
     }
 
@@ -147,7 +151,7 @@ public class UserApiController {
     @Getter
     static class UserLikeDto{
         private Long likedPostId;
-        private String likedPostWriter; // name
+        private String likedPostWriter;
         private String likedPostCategory;
 
         private String likedPostTitle;
@@ -166,17 +170,13 @@ public class UserApiController {
 
     @GetMapping("/api/v1/users/{id}")
     public UserDto usersByIdV1(@PathVariable(value = "id") Long id){
-        UserDto user = new UserDto(
-                userRepository.findById(id)
-                        .orElseThrow(IllegalStateException::new)
-                // userQueryRepository.findUserById(id)
-        );
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("UserNotFoundException"));
+        Long likeCount = likeRepository.countAllByPost_Writer(user);
 
-        // 임시
-        Long likeCount = likeRepository.countAllByPost_Writer(userRepository.findById(id).get()).get(); // user로 보내기
-        user.addTotalLike(likeCount);
-
-        return user;
+        UserDto userDto = new UserDto(user);
+        userDto.addTotalLike(likeCount);
+        return userDto;
     }
 
     @GetMapping("/api/v1/users/likes/{count}")

@@ -45,8 +45,7 @@ public class PostService {
 
         // findById(detail view)에서는 게시글의 likeList까지 !
 
-        Long totalLike = likeRepository.countAllByPost_Id(post.getId())
-                .orElseThrow(() -> new IllegalStateException());
+        Long totalLike = likeRepository.countAllByPost_Id(post.getId());
         post.addTotalLike(totalLike);
 
         List<LikeResponseDto> likes = likeRepository.findAllByPost_Id(post.getId())
@@ -64,9 +63,9 @@ public class PostService {
     public Long save(PostRequestDto postRequestDto) {
         // 카테고리랑 작성자 findById로 찾아서 mapping해주기
         Category category = categoryRepository.findById(postRequestDto.getCategoryId())
-                .orElseThrow(() -> new IllegalStateException());
+                .orElseThrow(() -> new IllegalStateException("CategoryNotFoundException"));
         User writer = userRepository.findById(postRequestDto.getWriterId())
-                .orElseThrow(() -> new IllegalStateException());
+                .orElseThrow(() -> new IllegalStateException("UserNotFoundException"));
 
         Post post = postRequestDto.toEntity();
         post.addCategory(category);

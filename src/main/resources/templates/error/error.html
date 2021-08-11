@@ -10,7 +10,10 @@
 <div layout:fragment="content">
     <div>오류가 발생했습니다.</div>
 
-    <div th:text="|원인 - ${error}|"></div>
+    <div th:object="${errorResponse}">
+        <div th:text="*{message}"></div>
+        <div th:text="*{status}"></div>
+    </div>
 </div>
 </body>
 </html>

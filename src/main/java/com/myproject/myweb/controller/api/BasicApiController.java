@@ -1,6 +1,6 @@
 package com.myproject.myweb.controller.api;
 
-import com.myproject.myweb.dto.CategoryResponseDto;
+import com.myproject.myweb.dto.category.CategoryResponseDto;
 import com.myproject.myweb.dto.user.UserResponseDto;
 import com.myproject.myweb.service.CategoryService;
 import lombok.AllArgsConstructor;

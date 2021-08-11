@@ -1,4 +1,4 @@
-package com.myproject.myweb.service.user;
+package com.myproject.myweb.service;
 
 import com.myproject.myweb.domain.user.Role;
 import com.myproject.myweb.domain.user.User;

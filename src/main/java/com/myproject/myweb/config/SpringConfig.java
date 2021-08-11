@@ -28,7 +28,7 @@ import com.myproject.myweb.repository.user.query.UserQueryRepository;
 import com.myproject.myweb.service.CategoryService;
 import com.myproject.myweb.service.LikeService;
 import com.myproject.myweb.service.PostService;
-import com.myproject.myweb.service.user.UserService;
+import com.myproject.myweb.service.UserService;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

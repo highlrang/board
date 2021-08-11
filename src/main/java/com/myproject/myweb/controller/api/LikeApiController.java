@@ -36,16 +36,15 @@ public class LikeApiController {
 
     // save는 return 값 있지만 push는 없게
     @PostMapping("/api/v1/likes")
-    public LikeResponseDto pushV1(@RequestBody LikeRequestDto likeRequestDto){
+    public void pushV1(@RequestBody LikeRequestDto likeRequestDto){
         likeService.push(likeRequestDto);
-        return new LikeResponseDto(); // 대충 빈객체 return
     }
 
     // 특정 게시글에 좋아요 한 사용자들 리스트
     @GetMapping("/api/v1/likes/post/{postId}")
     public Result<LikeDtoByPost> likeUsersByPostIdV1(@PathVariable(value="postId") Long postId){
         // likeQueryRepository.findAllLikesByPost(postId)
-        List<Like> entity = likeRepository.findAllByPost_Id(postId);
+        List<Like> entity = likeRepository.findAllByPost_Id(postId); // fetch 필요없음??
 
         List<LikeDtoByPost> result = entity.stream()
                 .map(e -> new LikeDtoByPost(e.getUser()))

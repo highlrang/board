@@ -17,12 +17,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @Controller
-@RequestMapping("${server.error.path:${error.path:/error}}")
+@RequestMapping("${server.error.path:${error.path:/error}}") // 에러코드.html로 연결, 그 외에는 ExceptionHandler가 낚아채감
 public class CustomErrorController extends BasicErrorController {
 
     public CustomErrorController(ErrorAttributes errorAttributes,
@@ -34,13 +35,7 @@ public class CustomErrorController extends BasicErrorController {
     @RequestMapping(produces = MediaType.TEXT_HTML_VALUE)
     public ModelAndView errorHtml(HttpServletRequest request,
                                   HttpServletResponse response) {
-        log(request); // 로그 추가
-
-        Map<String, Object> errorAttributes = getErrorAttributes(request, false);
-        errorAttributes.forEach(
-                (key, val) -> log.info("errorKey = " + key + " errorValue = " + errorAttributes.get(key))
-        );
-
+        log(request); // custom
         return super.errorHtml(request, response);
     }
 
@@ -50,8 +45,15 @@ public class CustomErrorController extends BasicErrorController {
         return super.error(request);
     }
 
-    private void log(HttpServletRequest request) {
-        request.getParameterMap().forEach((key, value) -> log.info(key + ", " + request.getParameterMap().get(key)));
+    private void log(HttpServletRequest request) { // request에서 무엇인가 끌어내니까 메서드화 >> 이런 방식 참고하기
+        Map<String, String[]> parameterMap = request.getParameterMap();
+        parameterMap.forEach(
+                (key, val) -> log.info("parameter " + key + " : " + Arrays.toString(parameterMap.get(key)))
+        );
+        Map<String, Object> errorAttributes = getErrorAttributes(request, true);
+        errorAttributes.forEach(
+                (key, val) -> log.info("errorKey = " + key + " errorValue = " + errorAttributes.get(key))
+        );
     }
 }
 

@@ -1,6 +1,6 @@
 package com.myproject.myweb.controller;
 
-import com.myproject.myweb.service.user.UserService;
+import com.myproject.myweb.service.UserService;
 import com.myproject.myweb.dto.user.UserRequestDto;
 import com.myproject.myweb.dto.user.UserResponseDto;
 import lombok.RequiredArgsConstructor;

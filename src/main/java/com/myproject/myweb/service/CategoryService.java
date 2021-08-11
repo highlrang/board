@@ -2,8 +2,8 @@ package com.myproject.myweb.service;
 
 import com.myproject.myweb.domain.Category;
 import com.myproject.myweb.repository.CategoryRepository;
-import com.myproject.myweb.dto.CategoryRequestDto;
-import com.myproject.myweb.dto.CategoryResponseDto;
+import com.myproject.myweb.dto.category.CategoryRequestDto;
+import com.myproject.myweb.dto.category.CategoryResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

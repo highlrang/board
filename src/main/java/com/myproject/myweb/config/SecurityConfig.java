@@ -1,7 +1,7 @@
 package com.myproject.myweb.config;
 
 import com.myproject.myweb.handler.LoginSuccessHandler;
-import com.myproject.myweb.service.user.UserService;
+import com.myproject.myweb.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
