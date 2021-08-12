@@ -12,7 +12,7 @@ import com.myproject.myweb.repository.post.PostRepository;
 import com.myproject.myweb.repository.post.query.PostQueryRepository;
 import com.myproject.myweb.repository.post.query.PostQuerydslRepository;
 import com.myproject.myweb.repository.user.UserRepository;
-import com.myproject.myweb.service.user.UserService;
+import com.myproject.myweb.service.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,10 +130,10 @@ public class DataInsertTest {
 
     @Test
     public void 카테고리정렬미해결게시글(){
-        List<PostByLikeCountQueryDto> allPostsByLikeAndComplete =
-                postQuerydslRepository.findAllPostsByLikeAndCategoryAndComplete(22L, false, 0);
+        List<PostByLikeCountQueryDto> allPostsByLikeAndNotComplete =
+                postQuerydslRepository.findAllPostsByLike(22L, false, -1);
         // 20
-        Map<String, List<PostByLikeCountQueryDto>> posts = allPostsByLikeAndComplete.stream()
+        Map<String, List<PostByLikeCountQueryDto>> posts = allPostsByLikeAndNotComplete.stream()
                 .sorted(Comparator.comparing(PostByLikeCountQueryDto::getLikeCount))
                 .collect(Collectors.groupingBy(PostByLikeCountQueryDto::getCategory));
 

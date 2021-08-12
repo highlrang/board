@@ -13,12 +13,13 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-@RestController
-@ControllerAdvice
+@ControllerAdvice // @RestControllerAdvice
 @Slf4j
 public class RestExceptionHandler {
 
@@ -40,9 +41,16 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(ArgumentException.class)
     public ResponseEntity<ErrorResponse> argumentException(ArgumentException e){
-        String message = messageSource.getMessage(e.getMessage(), new String[]{e.getArg()}, Locale.getDefault());
-        log.info("argument 에러 발생 - responseEntity 반환. 메세지 = " + message);
-        ErrorResponse response = new ErrorResponse(message, ErrorCode.INTERNAL_SERVER_ERROR);
+        Map<String, List<String>> messagesMap = e.getMessagesMap();
+
+        final String[] message = {""};
+        messagesMap.forEach(
+                (key, val) ->
+                message[0] += messageSource.getMessage(key, messagesMap.get(key).toArray(), Locale.getDefault())
+        );
+        ErrorResponse response = new ErrorResponse(message[0], ErrorCode.INTERNAL_SERVER_ERROR);
+
+        log.info("argument 에러 발생 - responseEntity 반환.");
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

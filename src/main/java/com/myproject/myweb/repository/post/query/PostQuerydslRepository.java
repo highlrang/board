@@ -1,6 +1,7 @@
 package com.myproject.myweb.repository.post.query;
 
 import com.myproject.myweb.domain.Post;
+import com.myproject.myweb.dto.post.PostResponseDto;
 import com.myproject.myweb.dto.post.query.PostByLikeCountQueryDto;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.ExpressionUtils;
@@ -29,14 +30,14 @@ public class PostQuerydslRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-    // fetch + paging
-    public List<Post> findAllWithCategoryAndPublicAndPagingByFetch(Long cateId, int offset) {
+    // fetch & all list paging & my list paging
+    public List<Post> findAllPaging(Long cateId, Long userId, Boolean isPublic, int offset) {
         List<Post> fetch = jpaQueryFactory.selectFrom(post)
                 .innerJoin(post.category, category)
                 .fetchJoin()
                 .innerJoin(post.writer, user)
                 .fetchJoin()
-                .where(category.id.eq(cateId), post.isPublic.eq(true))
+                .where(eqCategoryId(cateId), eqIsPublic(isPublic), eqUserId(userId))
                 .orderBy(post.id.desc())
                 .offset(offset)
                 .limit(10)
@@ -46,23 +47,8 @@ public class PostQuerydslRepository {
 
     }
 
-    // mylist paging
-    public List<Post> findAllWithCategoryAndWriterAndPagingByFetch(Long cateId, Long userId, int offset){
-        List<Post> fetch = jpaQueryFactory.selectFrom(post)
-                .innerJoin(post.category, category)
-                .fetchJoin()
-                .innerJoin(post.writer, user)
-                .fetchJoin()
-                .where(category.id.eq(cateId), user.id.eq(userId))
-                .orderBy(post.id.desc())
-                .offset(offset)
-                .limit(10)
-                .fetch();
-        return fetch;
-    }
-
-    // bestlist paging
-    public List<PostByLikeCountQueryDto> findAllPostsByLikeAndCategoryAndComplete(Long cateId, Boolean isComplete, int offset) {
+    // bestlist all or paging
+    public List<PostByLikeCountQueryDto> findAllPostsByLike(Long cateId, Boolean isComplete, int offset) {
         JPAQuery<PostByLikeCountQueryDto> jpaQuery = jpaQueryFactory.select(Projections.constructor(PostByLikeCountQueryDto.class, post.id, category.name, post.title, user.name, post.isPublic, like.count()))
                 .from(post)
                 .innerJoin(post.category, category)
@@ -106,20 +92,26 @@ public class PostQuerydslRepository {
                 .fetch();
 
         return (long) fetch.size();
-        // return (long) fetch.stream().mapToInt(Long::intValue).sum();
     }
 
     private BooleanExpression eqCategoryId(Long cateId){
-        if(cateId == null){
-            return null;
-        }
+        if(cateId == null) return null;
+
         return category.id.eq(cateId);
     }
 
     private BooleanExpression eqIsComplete(Boolean isComplete) {
-        if(isComplete == null){
-            return null;
-        }
+        if(isComplete == null) return null;
         return post.isComplete.eq(isComplete);
+    }
+
+    private BooleanExpression eqUserId(Long userId){
+        if(userId == null) return null;
+        return user.id.eq(userId);
+    }
+
+    private BooleanExpression eqIsPublic(Boolean isPublic){
+        if(isPublic == null) return null;
+        return post.isPublic.eq(isPublic);
     }
 }

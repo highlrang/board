@@ -2,22 +2,19 @@ package com.myproject.myweb.exception;
 
 import lombok.Getter;
 
+import java.util.List;
+import java.util.Map;
+
 @Getter
 public class ArgumentException extends RuntimeException{
 
-    private String arg;
+    private Map<String, List<String>> messagesMap;
 
-    public ArgumentException(){
-        super();
+    public ArgumentException(Map<String, List<String>> messagesAndArgs){
+        this.messagesMap = messagesAndArgs;
     }
 
     public ArgumentException(String message){
         super(message);
     }
-
-    public ArgumentException(String message, String arg){ // List<String> args ?
-        super(message);
-        this.arg = arg;
-    }
-
 }

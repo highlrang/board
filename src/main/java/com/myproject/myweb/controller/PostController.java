@@ -29,7 +29,7 @@ public class PostController {
 
     @GetMapping("/create")
     public String postCreateForm(@RequestParam("cateId") Long cateId,
-                                 @ModelAttribute PostRequestDto postRequestDto, // 자동으로 넘어감
+                                 @ModelAttribute PostRequestDto postRequestDto,
                                  Model model){
         model.addAttribute("cateId", cateId);
         return "post/create";
@@ -38,7 +38,7 @@ public class PostController {
     @PostMapping("/create")
     public String postCreate(PostRequestDto postRequestDto){
         Long id = postService.save(postRequestDto);
-        return "redirect:/detail/" + id; // redirect 에 + id해서 보내기
+        return "redirect:/detail/" + id;
     }
 
     @GetMapping("/detail/{id}") // ?key=value는 RequestParam
@@ -47,6 +47,7 @@ public class PostController {
         model.addAttribute("post", post);
 
         UserResponseDto user = (UserResponseDto) session.getAttribute("user");
+
         if (post.getWriterId().equals(user.getId())) {
             model.addAttribute("myPost", true);
         }else {
@@ -59,14 +60,16 @@ public class PostController {
 
     @GetMapping("/list")
     public String postList(@RequestParam("cateId") Long cateId, Model model){
-        model.addAttribute("cateId", cateId); // 후에 API로
+        List<PostResponseDto> posts = postService.findAllByCategory(cateId);
+        model.addAttribute("posts", posts);
+        model.addAttribute("cateId", cateId);
         return "post/list";
     }
 
-    @GetMapping("/list/mine") // 없애도 됨
+    @GetMapping("/list/mine")
     public String myPostList(@RequestParam("cateId") Long cateId, Model model){
-        User writer = (User)session.getAttribute("user"); // authenticationPrincipal과 session의 차이?
-        List<PostResponseDto> posts = postService.findAllMine(cateId, writer.getId());
+        User writer = (User)session.getAttribute("user");
+        List<PostResponseDto> posts = postService.findAllMineByCategory(cateId, writer.getId());
         model.addAttribute("posts", posts);
         return "post/list";
     }
@@ -76,17 +79,5 @@ public class PostController {
         PostDetailResponseDto post = postService.findById(id);
         model.addAttribute("post", post);
         return "post/update";
-    }
-
-    @PostMapping("/update/{id}")
-    public String postUpdate(@RequestParam Long id, PostRequestDto postRequestDto){
-        postService.update(id, postRequestDto);
-        return "redirect:/detail/" + id;
-    }
-
-    @PostMapping("/delete")
-    public String postDelete(@RequestParam Long id){
-        postService.delete(id);
-        return "redirect:/";
     }
 }

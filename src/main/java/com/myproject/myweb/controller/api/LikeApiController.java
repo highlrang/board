@@ -34,7 +34,6 @@ public class LikeApiController {
         private T data;
     }
 
-    // save는 return 값 있지만 push는 없게
     @PostMapping("/api/v1/likes")
     public void pushV1(@RequestBody LikeRequestDto likeRequestDto){
         likeService.push(likeRequestDto);
@@ -43,8 +42,7 @@ public class LikeApiController {
     // 특정 게시글에 좋아요 한 사용자들 리스트
     @GetMapping("/api/v1/likes/post/{postId}")
     public Result<LikeDtoByPost> likeUsersByPostIdV1(@PathVariable(value="postId") Long postId){
-        // likeQueryRepository.findAllLikesByPost(postId)
-        List<Like> entity = likeRepository.findAllByPost_Id(postId); // fetch 필요없음??
+        List<Like> entity = likeRepository.findAllByPost_Id(postId);
 
         List<LikeDtoByPost> result = entity.stream()
                 .map(e -> new LikeDtoByPost(e.getUser()))
@@ -63,7 +61,7 @@ public class LikeApiController {
                 .map(e -> new LikeDtoByUser(e.getPost()))
                 .collect(Collectors.toList());
 
-        List<Long> postIds = result.stream().map(p -> p.getPostId()).collect(Collectors.toList());
+        List<Long> postIds = result.stream().map(LikeDtoByUser::getPostId).collect(Collectors.toList());
         Map<Long, Long> likeCount = likeQuerydslRepository.findAllLikesByPostsIds(postIds); // native query
         result.forEach(r -> r.addTotalLike(likeCount.get(r.getPostId())));
 
@@ -110,7 +108,6 @@ public class LikeApiController {
             this.userEmail = u.getId();
             this.userName = u.getName();
             this.userRole = u.getRole().getTitle();
-
         }
 
     }

@@ -8,7 +8,7 @@ import com.myproject.myweb.repository.post.PostRepository;
 import com.myproject.myweb.repository.post.query.PostQueryRepository;
 import com.myproject.myweb.repository.user.UserRepository;
 import com.myproject.myweb.service.PostService;
-import com.myproject.myweb.service.user.UserService;
+import com.myproject.myweb.service.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

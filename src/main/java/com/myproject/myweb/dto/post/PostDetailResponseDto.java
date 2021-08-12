@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
@@ -33,14 +34,10 @@ public class PostDetailResponseDto {
         this.content = entity.getContent();
         this.isPublic = entity.getIsPublic();
         this.isComplete = entity.getIsComplete();
-    }
-
-    public void addTotalLike(Long totalLike){
-        this.totalLike = totalLike;
-    }
-
-    public void addLikeList(List<LikeResponseDto> likeList){
-        this.likes = likeList;
+        this.likes = entity.getLikeList().stream()
+                .map(LikeResponseDto::new)
+                .collect(Collectors.toList());
+        this.totalLike = (long) this.likes.size();
     }
 
 }

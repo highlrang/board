@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -42,7 +44,6 @@ public class UserApiController {
         result.forEach(u -> u.addTotalLike(likeCounts.get(u.getUserId())));
 
         return result;
-        // return userQueryRepository.findAllUsersByDto();
     }
 
     private List<Long> getUserIds(List<UserListDto> result) {
@@ -72,9 +73,12 @@ public class UserApiController {
             return result;
 
         }catch(IllegalArgumentException e){
-            throw new ArgumentException("ArgumentNotValidException", role);
+            Map<String, List<String>> messages = new HashMap<>();
+            List<String> args = new ArrayList<>();
+            args.add(role);
+            messages.put("ArgumentNotValidException", args);
+            throw new ArgumentException(messages);
         }
-        // return userQueryRepository.findAllUsersByDto(Role.valueOf(role));
     }
 
     @Getter
@@ -113,7 +117,7 @@ public class UserApiController {
             this.userName = u.getName();
             this.userPosts = u.getPostList()
                     .stream()
-                    .map(p -> new UserPostDto(p))
+                    .map(UserPostDto::new)
                     .collect(Collectors.toList());
             this.userLikes = u.getLikeList()
                     .stream()

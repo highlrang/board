@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Slf4j
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
 public class UserService implements UserDetailsService {
@@ -32,7 +33,6 @@ public class UserService implements UserDetailsService {
 
     }
 
-    // @Transactional(readOnly = true)
     public UserResponseDto findById(Long writerId) {
         User user = userRepository.findById(writerId)
                 .orElseThrow(() -> new IllegalStateException("UserNotFoundException"));

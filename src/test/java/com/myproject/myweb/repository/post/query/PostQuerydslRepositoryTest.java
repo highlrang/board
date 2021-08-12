@@ -25,11 +25,9 @@ public class PostQuerydslRepositoryTest {
     @Test
     public void 쿼리(){
         // 페이징 확인
-        postQuerydslRepository.findAllWithCategoryAndPublicAndPagingByFetch(2L, 0);
+        postQuerydslRepository.findAllPaging(2L, null, true, 0);
 
-
-        List<PostByLikeCountQueryDto> posts = postQuerydslRepository.findAllPostsByLikeAndCategoryAndComplete(2L, null, 0);
+        List<PostByLikeCountQueryDto> posts = postQuerydslRepository.findAllPostsByLike(2L, null, 0);
         posts.forEach(p -> System.out.println(p.getTitle() + p.getIsComplete()));
-
     }
 }

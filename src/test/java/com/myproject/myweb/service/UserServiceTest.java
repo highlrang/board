@@ -5,7 +5,7 @@ import com.myproject.myweb.domain.user.User;
 import com.myproject.myweb.repository.user.UserRepository;
 import com.myproject.myweb.dto.user.UserRequestDto;
 import com.myproject.myweb.dto.user.UserResponseDto;
-import com.myproject.myweb.service.user.UserService;
+import com.myproject.myweb.service.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -42,7 +42,7 @@ public class HomeController {
         return "user/register";
     }
 
-    @PostMapping("/register") // 커맨드객체 @RequestParam or @ModelAttribute - 생략 가능
+    @PostMapping("/register")
     public String register(@Valid UserRequestDto userRequestDto, BindingResult result) {
         // setter로 입력됨
 
@@ -70,7 +70,6 @@ public class HomeController {
 
     @GetMapping("/mypage")
     public String mypage(){
-        // 테스트용 throw new IllegalStateException();
         return "user/mypage";
     }
 

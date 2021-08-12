@@ -58,7 +58,7 @@ public class UserRoleUpdateJob {
                 .build();
     }
 
-    @Bean // batch 4.3 version JpaCursorItemReader
+    @Bean // batch 4.3 JpaCursorItemReader
     public JpaPagingItemReader<User> itemReader() {
         return new JpaPagingItemReaderBuilder<User>()
                 .name("jpaCursorItemReader")
@@ -67,7 +67,7 @@ public class UserRoleUpdateJob {
                         " from Like l" +
                         " join fetch l.post p" +
                         " join fetch p.writer w" +
-                        " where w.role = NORMAL_USER" + // 안될 수도
+                        " where w.role = NORMAL_USER" + // 되는지 확인
                         " group by l.post.writer" +
                         " having count(l.post.writer) >= 100" +
                         " order by count(l.post.writer) desc")
@@ -94,7 +94,7 @@ public class UserRoleUpdateJob {
     }
 
     /*
-    private ItemWriter<User> cursorWriter() {
+    private ItemWriter<User> cursorWriter() { // log custom
         return list -> {
             list.forEach(user -> log.info("user name = " + user.getName()));
 

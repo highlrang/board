@@ -2,11 +2,13 @@ package com.myproject.myweb.controller.api;
 
 import com.myproject.myweb.domain.Like;
 import com.myproject.myweb.domain.Post;
+import com.myproject.myweb.domain.user.Role;
 import com.myproject.myweb.dto.post.PostDetailResponseDto;
 import com.myproject.myweb.dto.post.PostRequestDto;
 import com.myproject.myweb.dto.post.query.PostQueryDto;
 import com.myproject.myweb.dto.post.query.admin.PostAdminMatchDto;
 import com.myproject.myweb.dto.user.UserResponseDto;
+import com.myproject.myweb.exception.ArgumentException;
 import com.myproject.myweb.repository.like.LikeRepository;
 import com.myproject.myweb.dto.post.query.PostByLikeCountQueryDto;
 import com.myproject.myweb.repository.like.query.LikeQueryRepository;
@@ -31,10 +33,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RestController
 public class PostApiController {
-
-    // service는 basic한 비즈니스 로직이니,
-    // 기존의 repository 또는 api스펙에 맞게 별도의 repository에 메서드 추가하여 불러와야함
-    // toMany가 아니라면 fetch join과 dto로 받는 것만으로 완료됨
+    // toMany가 아니라면 fetch join으로 완료됨
 
     private final PostRepository postRepository;
     private final PostQuerydslRepository postQuerydslRepository;
@@ -43,31 +42,21 @@ public class PostApiController {
     private HttpSession session;
 
     @GetMapping("/api/v1/posts")
-    // 카테고리 상관없이 모든 게시글
-    public List<PostListDto> postsV1(){
-        List<Post> entity = postRepository.findAllFetch();
+    public List<PostListDto> allPublicPostsV1(){
+        List<Post> entity = postRepository.findAllPublicFetch();
+        return toPostListDtos(entity);
 
-        List<PostListDto> posts = toPostListDtos(entity);
+        // 리스트에서는 상세정보 필요없음, toMany관계인 좋아요 불러오고 싶다면 method분리해서 사용
 
-        /* 리스트에서는 상세정보 필요없음, 사용한다면 method분리해서 사용
-        List<Long> postIds = posts.stream()
-                .map(p -> p.getId())
-                .collect(Collectors.toList());
-        ap<Long, Long> likeCount = likeQueryRepository.findAllLikesByPostsIds(postIds); // in-queryM
-        posts.forEach(p -> p.addTotalLike(likeCount.get(p.getId())));
-         */
-
-        return posts;
-
-        // toMany 관계는 따로 v5 방식(dto, 1+1(+1))으로 적용해보기
-        // (v3은 fetch join + distinct)
-        // 최종적으로는 v3.1(@batch fetch size) 방식으로 적용하고 모두 포폴에 넣기
+        // 최종적으로는 @batch fetch size (알아서 in query)
+        // 다른 방식으로 fetch join + in query
+        // 아니면 join + dto
 
     }
 
     private List<PostListDto> toPostListDtos(List<Post> entity) {
         return entity.stream()
-                    .map(e -> new PostListDto(e))
+                    .map(PostListDto::new)
                     .collect(Collectors.toList());
     }
 
@@ -81,10 +70,10 @@ public class PostApiController {
     @GetMapping("/api/v1/posts/category/{cateId}")
     public Result<PostListDto> postsByCategoryV1(@PathVariable("cateId") Long cateId,
                                                @RequestParam(value = "offset", defaultValue = "0") int offset){
-        List<Post> entity = postQuerydslRepository.findAllWithCategoryAndPublicAndPagingByFetch(cateId, offset);
+        List<Post> entity = postQuerydslRepository.findAllPaging(cateId, null, true, offset);
         List<PostListDto> posts = toPostListDtos(entity);
 
-        Long count = postRepository.countByCategory_Id(cateId);
+        Long count = postRepository.countByCategory_Id(cateId); // 페이징을 위해 총 게시글 개수
 
         return new Result(count, posts);
     }
@@ -93,30 +82,22 @@ public class PostApiController {
     public Result<PostListDto> postsByCategoryAndWriterV1(@PathVariable("cateId") Long cateId,
                                                         @PathVariable("writerId") Long writerId,
                                                         @RequestParam(value = "offset", defaultValue = "0") int offset){
-        List<Post> entity = postQuerydslRepository.findAllWithCategoryAndWriterAndPagingByFetch(cateId, writerId, offset);
+        List<Post> entity = postQuerydslRepository.findAllPaging(cateId, writerId, null, offset);
         List<PostListDto> posts = toPostListDtos(entity);
 
         Long count = postRepository.countByCategory_IdAndWriter_Id(cateId, writerId);
         return new Result(count, posts);
     }
 
-    @GetMapping("/api/v1/posts/writer/{writerId}")
-    // 카테고리 상관없이 자신의 전체 게시글 모음
+    @GetMapping("/api/v1/posts/writer/{writerId}") // 카테고리 상관 없이 개인의 모든 게시글
     public List<PostListDto> PostsByWriterV1(@PathVariable("writerId") Long writerId){
-
-        UserResponseDto user = (UserResponseDto)session.getAttribute("user");
-        if(!user.getId().equals(writerId)){
-            // 요청자 작성자 일치 확인
-        }
-
-        List<Post> entity = postRepository.findByWriterFetch(writerId);
+        List<Post> entity = postRepository.findAllByWriterFetch(writerId);
         List<PostListDto> posts = toPostListDtos(entity);
-
         return posts;
     }
 
     @Getter
-    // why static?? A) dto가 너무 많아지고, Inner class하면 각 클래스에서 사용하는 것만 볼 수 있음
+    // why static A) dto가 너무 많아지고, Inner class하면 각 클래스에서 사용하는 것만 볼 수 있음
     // "어떤 메소드가 인스턴스가 생성되지 않았더라도, 호출 할 것인가?"  => "그렇다." == static(basic한)
     static class PostListDto{
         private Long postCnt;
@@ -166,7 +147,7 @@ public class PostApiController {
 
             this.likes = p.getLikeList()
                     .stream()
-                        .map(like -> new PostLikeDto(like))
+                    .map(PostLikeDto::new)
                     .collect(Collectors.toList());
         }
 
@@ -189,12 +170,10 @@ public class PostApiController {
 
     @GetMapping("/api/v1/posts/{id}")
     public PostDto postDetailV1(@PathVariable(value="id") Long id){
-        // fetch join 안 한 likes만 stream()으로 lazy 초기화 필요 // 데이터 하나니까 1 + n 걱정 안하기
-
         Post entity = postRepository.findByIdFetch(id)
                 .orElseThrow(() -> new IllegalStateException("PostNotFoundException"));
 
-        PostDto post = new PostDto(entity); // repository에서 해야 영속성 유지되는 거 아님??!
+        PostDto post = new PostDto(entity);
         post.addTotalLike(likeRepository.countAllByPost_Id(post.getId()));
 
         return post;
@@ -208,32 +187,31 @@ public class PostApiController {
 
     @PutMapping("/api/v1/posts/{id}")
     public PostDetailResponseDto updatePostV1(@PathVariable("id") Long id,
-                                        @RequestBody @Valid PostRequestDto postRequestDto){
-        postService.update(id, postRequestDto); // findById(영속성 컨텍스트)는 service에서 다룸
-
-        PostDetailResponseDto postDetailResponseDto = postService.findById(id);
-        postDetailResponseDto.addTotalLike(likeRepository.countAllByPost_Id(postDetailResponseDto.getId()));
-        return postDetailResponseDto;
+                                              @RequestBody @Valid PostRequestDto postRequestDto){
+        UserResponseDto user = (UserResponseDto) session.getAttribute("user");
+        postService.update(id, postRequestDto, user);
+        return postService.findById(id);
     }
 
     @DeleteMapping("/api/v1/posts/{id}")
     public void deletePostV1(@PathVariable Long id){
-        postService.delete(id);
+        UserResponseDto user = (UserResponseDto) session.getAttribute("user");
+        postService.delete(id, user);
     }
 
-    @GetMapping("/api/v1/posts/best-likes/category/{cateId}")
+    @GetMapping("/api/v1/posts/best-likes/category/{cateId}") // 이용자에게 보여질 목록(페이징 처리)
     public Result postsByLikeAndCategoryV1(@PathVariable(value="cateId") Long cateId,
                                            @RequestParam(value="offset", defaultValue = "0") int offset
     ){
-        List<PostByLikeCountQueryDto> bestPosts = postQuerydslRepository.findAllPostsByLikeAndCategoryAndComplete(cateId, null, offset);
+        List<PostByLikeCountQueryDto> bestPosts = postQuerydslRepository.findAllPostsByLike(cateId, null, offset);
         Long count = postQuerydslRepository.countBestPosts(cateId);
         return new Result(count, bestPosts);
 
     }
 
-    @GetMapping("/api/v1/posts/best-likes/category/{cateId}/for-complete")
+    @GetMapping("/api/v1/posts/best-likes/category/{cateId}/for-complete") // 관리자에 전달할 전체 목록
     public List<PostByLikeCountQueryDto> postsByLikeAndCompleteV1(@PathVariable(value="cateId") Long cateId){
-        return postQuerydslRepository.findAllPostsByLikeAndCategoryAndComplete(cateId, false, -1);
+        return postQuerydslRepository.findAllPostsByLike(cateId, false, -1);
     }
 
     @GetMapping("/api/v1/posts/admin/matching")

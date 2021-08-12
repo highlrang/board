@@ -3,6 +3,7 @@ package com.myproject.myweb.service;
 import com.myproject.myweb.domain.Category;
 import com.myproject.myweb.domain.user.User;
 import com.myproject.myweb.dto.post.PostDetailResponseDto;
+import com.myproject.myweb.dto.user.UserResponseDto;
 import com.myproject.myweb.repository.CategoryRepository;
 import com.myproject.myweb.repository.post.PostRepository;
 import com.myproject.myweb.repository.user.UserRepository;
@@ -91,7 +92,7 @@ public class PostServiceTest {
                 .isPublic(isPublic2)
                 .build();
 
-        postService.update(id, dto);
+        postService.update(id, dto, new UserResponseDto(writer));
 
 
         // then
@@ -119,7 +120,7 @@ public class PostServiceTest {
         Long id = postResponseDto.getId();
 
 
-        postService.delete(id);
+        postService.delete(id, new UserResponseDto(writer));
 
 
         IllegalStateException e = assertThrows(IllegalStateException.class,

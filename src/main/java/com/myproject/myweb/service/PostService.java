@@ -2,12 +2,15 @@ package com.myproject.myweb.service;
 
 import com.myproject.myweb.domain.Category;
 import com.myproject.myweb.domain.Post;
+import com.myproject.myweb.domain.user.Role;
 import com.myproject.myweb.domain.user.User;
 import com.myproject.myweb.dto.like.LikeResponseDto;
 import com.myproject.myweb.dto.post.PostDetailResponseDto;
 import com.myproject.myweb.dto.post.query.admin.BestPostAdminDto;
 import com.myproject.myweb.dto.post.query.admin.PostAdminMatchDto;
 import com.myproject.myweb.dto.post.query.PostByLikeCountQueryDto;
+import com.myproject.myweb.dto.user.UserResponseDto;
+import com.myproject.myweb.exception.ArgumentException;
 import com.myproject.myweb.repository.CategoryRepository;
 import com.myproject.myweb.repository.like.LikeRepository;
 import com.myproject.myweb.repository.post.PostRepository;
@@ -26,6 +29,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 @Service
 @Slf4j
 public class PostService {
@@ -33,35 +37,19 @@ public class PostService {
     private final PostQuerydslRepository postQuerydslRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
-    private final LikeRepository likeRepository;
 
-    private final WebClient webClient = WebClient.create(); // builder()
+    private final WebClient webClient = WebClient.create();
 
 
     public PostDetailResponseDto findById(Long id) {
-        Post entity = postRepository.findById(id)
+        Post entity = postRepository.findByIdFetch(id)
                 .orElseThrow(() -> new IllegalStateException("PostNotFoundException"));
-        PostDetailResponseDto post = new PostDetailResponseDto(entity);
-
-        // findById(detail view)에서는 게시글의 likeList까지 !
-
-        Long totalLike = likeRepository.countAllByPost_Id(post.getId());
-        post.addTotalLike(totalLike);
-
-        List<LikeResponseDto> likes = likeRepository.findAllByPost_Id(post.getId())
-                .stream()
-                .map(l -> new LikeResponseDto(l))
-                .collect(Collectors.toList());
-        post.addLikeList(likes);
-
-        // 여기서는 controller용으로 했지만 api에 만들어놨던 거로 연결 가능?
-
-        return post;
+        // fetch join으로 likeList추가, 여러 개의 게시글일 경우 in 쿼리 따로 날림
+        return new PostDetailResponseDto(entity);
     }
 
     @Transactional
     public Long save(PostRequestDto postRequestDto) {
-        // 카테고리랑 작성자 findById로 찾아서 mapping해주기
         Category category = categoryRepository.findById(postRequestDto.getCategoryId())
                 .orElseThrow(() -> new IllegalStateException("CategoryNotFoundException"));
         User writer = userRepository.findById(postRequestDto.getWriterId())
@@ -73,45 +61,49 @@ public class PostService {
         return postRepository.save(post).getId();
     }
 
-    // Long 말고 void로 하는 거는? api때문에 return id 하는 것인지
+    private List<PostResponseDto> toPostResponseDto(List<Post> posts){
+        return posts.stream()
+                .map(PostResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<PostResponseDto> findAllMine(Long writerId){ // offset -1 전달하면 페이징 처리 안 함
+        List<Post> posts = postQuerydslRepository.findAllPaging(null, writerId, null, 10);
+        return toPostResponseDto(posts);
+    }
+
+    public List<PostResponseDto> findAll(){
+        List<Post> posts = postQuerydslRepository.findAllPaging(null, null, true, 10);
+        return toPostResponseDto(posts);
+    }
+
+    public List<PostResponseDto> findAllMineByCategory(Long cateId, Long writerId) {
+        List<Post> posts = postQuerydslRepository.findAllPaging(cateId, writerId, null, 10);
+        return toPostResponseDto(posts);
+    }
+
+    public List<PostResponseDto> findAllByCategory(Long cateId) {
+        List<Post> posts = postQuerydslRepository.findAllPaging(cateId, null, true, 10);
+        return toPostResponseDto(posts);
+    }
+
     @Transactional
-    public Long update(Long id, PostRequestDto postRequestDto) {
-        Post post = postRepository.findById(id)
+    public Long update(Long postId, PostRequestDto postRequestDto, UserResponseDto user) {
+        Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalStateException("PostNotFoundException"));
+
+        checkWriterAuthority(post.getWriter().getId(), user);
 
         post.update(postRequestDto.getTitle(), postRequestDto.getContent(), postRequestDto.getIsPublic());
-        return id;
-    }
-
-    @Transactional(readOnly = true)
-    public List<PostResponseDto> findAll() {
-        return postRepository.findAll().stream()
-                .map(PostResponseDto::new) // dto로 받기
-                .collect(Collectors.toList()); // list화
-    }
-
-    @Transactional(readOnly = true)
-    public List<PostResponseDto> findAllMine(Long cateId, Long writerId) {
-        return postRepository.findAllByCategory_IdAndWriter_Id(cateId, writerId)
-                .stream()
-                .map(PostResponseDto::new)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<PostResponseDto> findAllByCategory(Long cateId) {
-        // postQueryRepository로 페이징 test하기
-        return postRepository.findAllByCategory_IdAndIsPublic(cateId, true)
-                .stream()
-                .map(PostResponseDto::new)
-                .collect(Collectors.toList());
-
+        return postId;
     }
 
     @Transactional
-    public void delete(Long id) {
-        Post post = postRepository.findById(id)
+    public void delete(Long postId, UserResponseDto user) {
+        Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalStateException("PostNotFoundException"));
+
+        checkWriterAuthority(post.getWriter().getId(), user);
 
         post.getWriter().postDelete(post);
         post.getCategory().postDelete(post);
@@ -119,6 +111,13 @@ public class PostService {
         postRepository.delete(post);
     }
 
+    private void checkWriterAuthority(Long writerId, UserResponseDto user){
+        if(!user.getRoleTitle().equals(Role.ADMIN.getTitle()) && !user.getId().equals(writerId)) {
+            throw new ArgumentException("NotTheWriterException");
+        }
+    }
+
+    @Transactional
     public Long postCompleteUpdate(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("PostNotFoundException"));
@@ -129,7 +128,6 @@ public class PostService {
         return id;
 
     }
-
 
     public List<PostAdminMatchDto> postMatchingAdmin() {
         Map<String, List<Long>> postIds = getPostIdMap();
@@ -168,7 +166,7 @@ public class PostService {
             e.printStackTrace();
         }
 
-        // category로 묶기
+        // BestPostAdminDto > PostAdminMatchDto
         List<PostAdminMatchDto> postAdminMatchDtos = postAdmins.stream()
                 .map(a -> new PostAdminMatchDto(a.getCategory(), a.getId()))
                 .collect(Collectors.toList());
@@ -178,16 +176,16 @@ public class PostService {
 
     private Map<String, List<Long>> getPostIdMap() {
         List<PostByLikeCountQueryDto> allPosts =
-                postQuerydslRepository.findAllPostsByLikeAndCategoryAndComplete(null, false, -1);
+                postQuerydslRepository.findAllPostsByLike(null, false, -1);
         allPosts.sort(Comparator.comparing(PostByLikeCountQueryDto::getLikeCount));
 
-        // category로 묶기
-        Map<String, List<Long>> postIds = new HashMap<>();
+        // category로 grouping
+        Map<String, List<Long>> postIdsByCategory = new HashMap<>();
         allPosts.stream()
                 .collect(Collectors.groupingBy(PostByLikeCountQueryDto::getCategory))
-                .forEach((key, value) -> postIds.put(key, value.stream().map(PostByLikeCountQueryDto::getId).collect(Collectors.toList())));
+                .forEach((key, value) -> postIdsByCategory.put(key, value.stream().map(PostByLikeCountQueryDto::getId).collect(Collectors.toList())));
 
-        return postIds;
+        return postIdsByCategory;
     }
 
 }

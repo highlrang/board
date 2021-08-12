@@ -60,7 +60,7 @@ public class LikeRepositoryTest {
     @Test
     public void 작성자별_좋아요_총개수(){
         User user = userRepository.findByEmail("jhw127@naver.com").get();
-        Long count = likeRepository.countAllByPost_Writer(user).get();
+        Long count = likeRepository.countAllByPost_Writer(user);
 
         List<Like> likes = likeRepository.findAll();
         Long likesCnt = 0L;
@@ -74,9 +74,9 @@ public class LikeRepositoryTest {
     @Test
     public void 게시글별_좋아요_총개수(){
         User user = userRepository.findByEmail("jhw127@naver.com").get();
-        Post post = postRepository.findByWriter(user).get(0);
+        Post post = postRepository.findAllByWriterFetch(user.getId()).get(0);
 
-        Long count = likeRepository.countAllByPost_Id(post.getId()).get();
+        Long count = likeRepository.countAllByPost_Id(post.getId());
         List<Like> likes = likeRepository.findAllByPost_Id(post.getId());
 
         assertThat(likes.size()).isEqualTo(Integer.valueOf(Math.toIntExact(count)));

@@ -38,7 +38,7 @@ public class LikeServiceTest {
     @Test
     public void 게시글_좋아요_있으면_자동삭제_테스트_push(){
         User user = userRepository.findByEmail("jhw127@naver.com").get();
-        Post post = postRepository.findByWriter(user).get(0);
+        Post post = postRepository.findAllByWriterFetch(user.getId()).get(0);
         Long userId = user.getId();
         Long postId = post.getId();
 
