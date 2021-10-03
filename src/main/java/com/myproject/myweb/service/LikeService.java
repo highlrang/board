@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -37,26 +39,21 @@ public class LikeService {
         User user = userRepository.findById(likeRequestDto.getUserId())
                 .orElseThrow(() -> new IllegalStateException("UserNotFoundException"));
 
-        return likeRepository.save(
+        Like like = likeRepository.save(
                 Like.builder()
-                .post(post)
-                .user(user)
-                .build()
-        ).getId();
+                        .post(post)
+                        .user(user)
+                        .build()
+        );
+        return like.getId();
     }
 
 
     @Transactional
     public void push(LikeRequestDto likeRequestDto){
-
-        Long zero = 0L;
-        Long id = likeRepository.findByPost_IdAndUser_Id(likeRequestDto.getPostId(), likeRequestDto.getUserId())
-                .map(Like::getId)
-                .orElse(zero);
-
-        if(!id.equals(zero)){
-            this.delete(id);
-
+        Optional<Like> like = likeRepository.findByPost_IdAndUser_Id(likeRequestDto.getPostId(), likeRequestDto.getUserId());
+        if(like.isPresent()){
+            this.delete(like.get().getId());
         }else{
             this.save(likeRequestDto);
         }
@@ -71,7 +68,6 @@ public class LikeService {
         like.getUser().likeDelete(like);
 
         likeRepository.delete(like);
-
     }
 
     // 특정 게시글 좋아요 개수

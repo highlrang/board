@@ -32,26 +32,6 @@ public class UserQuerydslRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public List<User> findAllByMap(){
-        // select 절에 list 안 나옴. lazy 상태이기 때문에
-        // for문 돌면서 postList 호출하면 user ids "in query"로 추가 query 발생
-        List<User> transform = queryFactory.selectFrom(user)
-                .fetch();
-
-        return transform;
-    }
-
-    public List<User> findAllByFetch(){ // n+1해결
-        List<User> fetch = queryFactory.selectFrom(user)
-                .leftJoin(user.likeList) // user가 좋아한 좋아요 리스트 select절에서 가져옴(쿼리 한 번 발생)
-                // 하위의 하위 엔티티도 한 줄로 가능
-                // but ToMany관계는 1개만 가능 >> toOne만 fetch로 하고 나머지는 batch inQuery로
-                .fetchJoin()
-                .fetch();
-
-        return fetch;
-    }
-
     public Map<Long, UserQueryDto> findAllInQeury(){
         Map<Long, UserQueryDto> users = queryFactory.selectFrom(user)
                 .transform(groupBy(user.id).as(Projections.constructor(UserQueryDto.class, user.id, user.email, user.name, user.role)));

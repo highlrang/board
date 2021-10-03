@@ -11,9 +11,7 @@ import com.myproject.myweb.dto.user.UserResponseDto;
 import com.myproject.myweb.exception.ArgumentException;
 import com.myproject.myweb.repository.like.LikeRepository;
 import com.myproject.myweb.dto.post.query.PostByLikeCountQueryDto;
-import com.myproject.myweb.repository.like.query.LikeQueryRepository;
 import com.myproject.myweb.repository.post.PostRepository;
-import com.myproject.myweb.repository.post.query.PostQueryRepository;
 import com.myproject.myweb.repository.post.query.PostQuerydslRepository;
 import com.myproject.myweb.service.PostService;
 import com.myproject.myweb.dto.post.PostResponseDto;
@@ -33,26 +31,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RestController
 public class PostApiController {
-    // toMany가 아니라면 fetch join으로 완료됨
-
     private final PostRepository postRepository;
     private final PostQuerydslRepository postQuerydslRepository;
     private final PostService postService;
     private final LikeRepository likeRepository;
-    private HttpSession session;
-
-    @GetMapping("/api/v1/posts")
-    public List<PostListDto> allPublicPostsV1(){
-        List<Post> entity = postRepository.findAllPublicFetch();
-        return toPostListDtos(entity);
-
-        // 리스트에서는 상세정보 필요없음, toMany관계인 좋아요 불러오고 싶다면 method분리해서 사용
-
-        // 최종적으로는 @batch fetch size (알아서 in query)
-        // 다른 방식으로 fetch join + in query
-        // 아니면 join + dto
-
-    }
 
     private List<PostListDto> toPostListDtos(List<Post> entity) {
         return entity.stream()
@@ -87,13 +69,6 @@ public class PostApiController {
 
         Long count = postRepository.countByCategory_IdAndWriter_Id(cateId, writerId);
         return new Result(count, posts);
-    }
-
-    @GetMapping("/api/v1/posts/writer/{writerId}") // 카테고리 상관 없이 개인의 모든 게시글
-    public List<PostListDto> PostsByWriterV1(@PathVariable("writerId") Long writerId){
-        List<Post> entity = postRepository.findAllByWriterFetch(writerId);
-        List<PostListDto> posts = toPostListDtos(entity);
-        return posts;
     }
 
     @Getter
@@ -168,17 +143,6 @@ public class PostApiController {
         }
     }
 
-    @GetMapping("/api/v1/posts/{id}")
-    public PostDto postDetailV1(@PathVariable(value="id") Long id){
-        Post entity = postRepository.findByIdFetch(id)
-                .orElseThrow(() -> new IllegalStateException("PostNotFoundException"));
-
-        PostDto post = new PostDto(entity);
-        post.addTotalLike(likeRepository.countAllByPost_Id(post.getId()));
-
-        return post;
-    }
-
     @PostMapping("/api/v1/posts")
     public PostDetailResponseDto savePostV1(@RequestBody @Valid PostRequestDto postRequestDto){
         Long id = postService.save(postRequestDto);
@@ -187,17 +151,23 @@ public class PostApiController {
 
     @PutMapping("/api/v1/posts/{id}")
     public PostDetailResponseDto updatePostV1(@PathVariable("id") Long id,
-                                              @RequestBody @Valid PostRequestDto postRequestDto){
+                                              @RequestBody @Valid PostRequestDto postRequestDto,
+                                              HttpSession session){
         UserResponseDto user = (UserResponseDto) session.getAttribute("user");
         postService.update(id, postRequestDto, user);
         return postService.findById(id);
     }
 
     @DeleteMapping("/api/v1/posts/{id}")
-    public void deletePostV1(@PathVariable Long id){
+    public void deletePostV1(@PathVariable Long id, HttpSession session){
         UserResponseDto user = (UserResponseDto) session.getAttribute("user");
         postService.delete(id, user);
     }
+
+
+
+    /* ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ */
+
 
     @GetMapping("/api/v1/posts/best-likes/category/{cateId}") // 이용자에게 보여질 목록(페이징 처리)
     public Result postsByLikeAndCategoryV1(@PathVariable(value="cateId") Long cateId,

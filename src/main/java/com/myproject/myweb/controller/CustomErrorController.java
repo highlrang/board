@@ -50,6 +50,7 @@ public class CustomErrorController extends BasicErrorController {
         parameterMap.forEach(
                 (key, val) -> log.info("parameter " + key + " : " + Arrays.toString(parameterMap.get(key)))
         );
+
         Map<String, Object> errorAttributes = getErrorAttributes(request, true);
         errorAttributes.forEach(
                 (key, val) -> log.info("errorKey = " + key + " errorValue = " + errorAttributes.get(key))

@@ -66,24 +66,24 @@
     </div>
 
     <div th:if='${post.isComplete == true }'>
-        <div class="badge bg-blue-200 text-wrap" style="width: 8rem;">
+        <div class="badge bg-dark text-light text-wrap" style="width: 8rem;">
             해결완료
         </div>
     </div>
     <div th:if='${post.isComplete == false }'>
-        <div class="badge bg-blue-200 text-wrap" style="width: 8rem;">
+        <div class="badge bg-light text-wrap" style="width: 8rem;">
             미해결 상태
         </div>
     </div>
 
     <div th:if="${myPost == true}">
         <div th:if='${post.isPublic == true }'>
-            <div class="badge bg-blue-200 text-wrap" style="width: 8rem;">
+            <div class="badge bg-light text-wrap" style="width: 8rem;">
                 공개 게시글
             </div>
         </div>
         <div th:if='${post.isPublic == false }'>
-            <div class="badge bg-blue-200 text-wrap" style="width: 8rem;">
+            <div class="badge bg-dark text-light text-wrap" style="width: 8rem;">
                 비공개 게시글
             </div>
         </div>
@@ -98,15 +98,13 @@
         </div>
     </div>
 
-    <div class="badge bg-light text-wrap" style="width: 8rem;">
-        <a th:text='|게시글 좋아요 - ${post.totalLike} 개|' href="#" onclick="clickLikeList()"></a>
+    <div class="badge bg-danger text-light text-wrap" style="width: 8rem;">
+        <span th:text='|게시글 좋아요 - ${post.totalLike} 개|' onclick="clickLikeList()"></span>
     </div>
     <div id="likes" style="display:none;">
-        <ul class="list-group list-group-flush">
-            <span th:each="like : ${post.likes}">
-                <li class="list-group-item" th:text="${like.userName}"></li>
-            </span>
-        </ul>
+        <div th:each="like : ${post.likes}">
+            <a class="badge bg-light text-dark" th:text="${like.userName}" href="#"></a>
+        </div>
     </div>
 </div>
 </body>

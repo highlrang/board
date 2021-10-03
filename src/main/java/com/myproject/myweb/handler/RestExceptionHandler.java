@@ -50,7 +50,7 @@ public class RestExceptionHandler {
         );
         ErrorResponse response = new ErrorResponse(message[0], ErrorCode.INTERNAL_SERVER_ERROR);
 
-        log.info("argument 에러 발생 - responseEntity 반환.");
+        log.error("argument 에러 발생 - responseEntity 반환.");
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

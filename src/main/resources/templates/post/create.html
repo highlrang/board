@@ -8,7 +8,8 @@
     <title>Title</title>
 </head>
 <body>
-<script>
+<div layout:fragment="content">
+    <script>
         $(document).ready(function(){
 
             $(document).on('click', '#isPublic', function(){
@@ -21,7 +22,6 @@
 
         });
     </script>
-    <div layout:fragment="content">
     <form>
         <div class="mb-3">
             <input class="form-control" type="text" placeholder="제목" id="title">
@@ -44,6 +44,6 @@
         </div>
 
     </form>
-    </div>
+</div>
 </body>
 </html>

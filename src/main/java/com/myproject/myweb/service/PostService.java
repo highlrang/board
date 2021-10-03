@@ -42,7 +42,7 @@ public class PostService {
 
 
     public PostDetailResponseDto findById(Long id) {
-        Post entity = postRepository.findByIdFetch(id)
+        Post entity = postRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("PostNotFoundException"));
         // fetch join으로 likeList추가, 여러 개의 게시글일 경우 in 쿼리 따로 날림
         return new PostDetailResponseDto(entity);

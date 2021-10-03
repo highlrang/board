@@ -13,13 +13,11 @@
             <div th:text="${session.user.email}"></div>
             <div th:text="${session.user.roleTitle}"></div>
         </div>
-
-        <div class="mb-5">
+        <div>
             <a href="/logout" class="btn btn-light">로그아웃</a>
         </div>
-
         <div>
-            <a href="/signout" onclick="return confirm('탈퇴하시겠습니까?');" class="btn btn-light">탈퇴기능</a>
+            <a href="/signout" onclick="return confirm('탈퇴하시겠습니까?');" class="btn btn-light">탈퇴</a>
         </div>
     </div>
 </body>
