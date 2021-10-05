@@ -98,15 +98,16 @@ var main = {
         $.ajax({
             type: 'POST',
             url: '/api/v1/likes',
-            dataType: 'json',
+            // dataType: 'json', // return null
             contentType: 'application/json; charset=utf-8',
-            data: JSON.stringify(data)
-
-        }).done(function(){
-            window.location.href = '/post/detail/' + id;
-
-        }).fail(function(request, error){
-            window.location.href='/error';
+            data: JSON.stringify(data),
+            success : function(data){
+                window.location.href = '/post/detail/' + id;
+            },
+            fail : function(request, error){
+                console.log(error);
+                window.location.href='/error';
+            }
         });
     }
 };
