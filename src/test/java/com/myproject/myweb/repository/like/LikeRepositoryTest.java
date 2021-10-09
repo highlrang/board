@@ -6,6 +6,8 @@ import com.myproject.myweb.domain.user.Role;
 import com.myproject.myweb.domain.user.User;
 import com.myproject.myweb.repository.like.LikeRepository;
 import com.myproject.myweb.repository.post.PostRepository;
+import com.myproject.myweb.repository.post.query.PostQueryRepository;
+import com.myproject.myweb.repository.post.query.PostQuerydslRepository;
 import com.myproject.myweb.repository.user.UserRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,14 +27,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 public class LikeRepositoryTest {
 
-    @Autowired private UserRepository userRepository;
-    @Autowired private PostRepository postRepository;
-    @Autowired private LikeRepository likeRepository;
+    @Autowired UserRepository userRepository;
+    @Autowired PostRepository postRepository;
+    @Autowired LikeRepository likeRepository;
 
-    @Test
-    public void query(){
-
-    }
+    @Autowired PostQuerydslRepository postQuerydslRepository;
+    @Autowired PostQueryRepository postQueryRepository;
 
     @Test
     public void 좋아요(){
@@ -74,7 +74,10 @@ public class LikeRepositoryTest {
     @Test
     public void 게시글별_좋아요_총개수(){
         User user = userRepository.findByEmail("jhw127@naver.com").get();
-        Post post = postRepository.findAllByWriterFetch(user.getId()).get(0);
+        Post post = postRepository.findAll().stream()
+                .filter(p -> p.getWriter().equals(user))
+                .findAny()
+                .get();
 
         Long count = likeRepository.countAllByPost_Id(post.getId());
         List<Like> likes = likeRepository.findAllByPost_Id(post.getId());

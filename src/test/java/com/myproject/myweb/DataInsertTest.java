@@ -17,14 +17,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,99 +32,69 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 public class DataInsertTest {
     @Autowired CategoryRepository categoryRepository;
-    @Autowired UserService userService;
+    @Autowired BCryptPasswordEncoder passwordEncoder;
     @Autowired UserRepository userRepository;
     @Autowired PostRepository postRepository;
     @Autowired PostQuerydslRepository postQuerydslRepository;
     @Autowired LikeRepository likeRepository;
 
-    @Test
-    public void 카테고리insert(){
-
-        String[] names = {"Music", "Movie", "Exercise", "Food", "Reading", "Game"};
-
-        for(int i=0; i<names.length; i++) {
-            categoryRepository.save(Category.builder()
-                    .name(names[i])
-                    .build()
-            );
-        }
-
-        List<Category> categoryList = categoryRepository.findAll();
-        System.out.println(categoryList.size());
-
+    @Test // @Commit
+    public void 카테고리(){
+        Category category = categoryRepository.findByName("Free").get();
+        // category.update("free");
     }
 
-    @Test @Commit
+    @Test
     public void 사용자insert(){
 
-        for(int i=1; i<101; i++) {
-            String email = i+"@naver.com";
-            String name = i+"사용자"+i;
-            userService.join(
-                    UserRequestDto.builder().email(email).name(name).password("xhxh5314").build()
-            );
-        }
+        String email = "joah@naver.com";
+        String name = "조아";
+        String password = passwordEncoder.encode("xhxh5314");
+        // userRepository.save(User.builder().email(email).name(name).password(password).build());
 
-        System.out.println(userRepository.findAll().size());
+        email = "spring@naver.com";
+        name = "봄봄봄";
 
+        email = "anything@naver.com";
+        name = "아무개";
+
+        // 232(joah) 233(spring) 234(anything)
+        // 228(127) 10(126-정사원) 9(125-김이름)
     }
 
 
-    @Test @Commit
+    @Test
     public void 게시글insert(){
-
-        String[] categories = {"Music", "Movie", "Exercise", "Food", "Reading", "Game"};
-
-        for(int i=1; i<49; i++) {
-
-            String cate;
-            if(i>5) {
-                cate = categories[i % 5];
-            }else{
-                cate = categories[i];
-            }
-
-            Post post = Post.builder()
-                    .title(cate + " 게시글 " + i)
-                    .content(cate + "의 " + i + "번째 게시글 내용")
-                    .isPublic(true)
-                    .build();
-
-            Category category = categoryRepository.findByName(cate).get();
-            post.addCategory(category);
-
-            User user = userRepository.findByEmail(i+"@naver.com").get();
-            post.addWriter(user);
-
-            postRepository.save(post);
-        }
+        // Post post = Post.createPost("title", "content", true, Category, User);
     }
 
-    @Test @Commit
+    @Test
     public void 좋아요insert(){
-        List<User> users = userRepository.findByEmailContains("7");
-        List<Post> posts = postRepository.findAll();
+        // 140 best글 (joah - 고민글)
+        // 141 best글 (spring - 공부)
+        // 142 best글 + 상세페이지 좋아요와 채택 캡쳐 (126 - 식물)
+        // 143 비공개게시글 + 수정 화면 캡쳐 + 미채택 미공개 상세캡쳐 (127 - 일기)
 
+        Post post = postRepository.findById(141l).get();
+        List<Like> likes = new ArrayList<>();
 
-        int j=2;
+        User user = userRepository.findByEmail("anything@naver.com").get();
+        likes.add(Like.builder().post(post).user(user).build());
 
-        for(Post p: posts){
-            if (p.getCategory().getId() == 2) continue;
-            if (p.getTitle().contains("2") || p.getTitle().contains("5") || p.getTitle().contains("8") || p.getTitle().contains("9")) continue;
+        user = userRepository.findByEmail("joah@naver.com").get();
+        likes.add(Like.builder().post(post).user(user).build());
 
-            for(int i=0; i<users.size(); i++){
-                if(i%j==0) continue;
+        user = userRepository.findByEmail("spring@naver.com").get();
+        likes.add(Like.builder().post(post).user(user).build());
 
-                likeRepository.save(Like.builder()
-                        .post(p)
-                        .user(users.get(i))
-                        .build());
-            }
-            j += 1;
-        }
+        user = userRepository.findByEmail("jhw127@naver.com").get();
+        likes.add(Like.builder().post(post).user(user).build());
 
-        System.out.println(likeRepository.findAll().size());
+        user = userRepository.findByEmail("jhw126@naver.com").get();
+        likes.add(Like.builder().post(post).user(user).build());
+
+        user = userRepository.findByEmail("jhw125@naver.com").get();
+        likes.add(Like.builder().post(post).user(user).build());
     }
 
     @Test

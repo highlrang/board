@@ -5,6 +5,8 @@ import com.myproject.myweb.domain.Post;
 import com.myproject.myweb.domain.user.User;
 import com.myproject.myweb.repository.like.LikeRepository;
 import com.myproject.myweb.repository.post.PostRepository;
+import com.myproject.myweb.repository.post.query.PostQueryRepository;
+import com.myproject.myweb.repository.post.query.PostQuerydslRepository;
 import com.myproject.myweb.repository.user.UserRepository;
 import com.myproject.myweb.dto.like.LikeRequestDto;
 import com.myproject.myweb.dto.like.LikeResponseDto;
@@ -30,15 +32,21 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Transactional
 public class LikeServiceTest {
 
-    @Autowired private PostRepository postRepository;
-    @Autowired private LikeService likeService;
-    @Autowired private LikeRepository likeRepository;
-    @Autowired private UserRepository userRepository;
+    @Autowired PostRepository postRepository;
+    @Autowired PostQueryRepository postQueryRepository;
+
+    @Autowired LikeService likeService;
+    @Autowired LikeRepository likeRepository;
+
+    @Autowired UserRepository userRepository;
 
     @Test
     public void 게시글_좋아요_있으면_자동삭제_테스트_push(){
         User user = userRepository.findByEmail("jhw127@naver.com").get();
-        Post post = postRepository.findAllByWriterFetch(user.getId()).get(0);
+        Post post = postRepository.findAll().stream()
+                                            .filter(p -> p.getWriter().equals(user))
+                                            .findAny()
+                                            .get();
         Long userId = user.getId();
         Long postId = post.getId();
 

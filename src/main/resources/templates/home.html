@@ -8,56 +8,10 @@
     <title>Title</title>
 </head>
 <body>
-
 <div layout:fragment="content">
 
-    this area is home - content.
+    환영합니다. 카테고리를 방문하여 게시글을 살펴보세요.
 
-    <br>
-    <span th:if="${user==null}"> <!--#strings.isEmpty(examData)-->
-
-        <div>
-            <p>안녕하세요!</p>
-
-            <button type="button" class="btn btn-light" onclick="location.href='/login'">로그인</button>
-            <button type="button" class="btn btn-light" onclick="location.href='/register'">회원가입</button>
-
-        </div>
-    </span>
-
-
-    <span th:if="${user!=null}">
-        <p th:text="|${user.name}님, 안녕하세요!|"></p>
-
-        <div th:object="${user}">
-            <div th:text="|이메일 정보 : *{email}|"></div>
-        </div>
-
-        <div>
-            <span th:each="category : ${categories}">
-                <span>
-                    <a th:href="@{/post/list(cateId=${category.id})}" th:text="${category.name}"></a>
-                </span>
-            </span>
-
-            <div><a class="btn btn-light" th:href="@{/logout}">로그아웃</a></div>
-        </div>
-
-
-        <!--
-        <span th:text="${user.username}"></span>
-
-        <span th:each="u : ${user}">
-        <div>
-            <span th:text="${u.userName}"></span>
-        </div>
-        </span>
-
-        href="@{/{id} (id=${item.id})}"
-        -->
-
-    </span>
-
-    </div>
+</div>
 </body>
 </html>

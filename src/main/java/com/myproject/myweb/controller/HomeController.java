@@ -23,7 +23,7 @@ public class HomeController {
 
     @RequestMapping("/")
     public String home(Model model){
-        return "layout/basic";
+        return "home";
     }
 
     @GetMapping("/login")

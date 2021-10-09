@@ -2,39 +2,34 @@ package com.myproject.myweb.controller.api;
 
 import com.myproject.myweb.domain.Like;
 import com.myproject.myweb.domain.Post;
-import com.myproject.myweb.domain.user.Role;
 import com.myproject.myweb.dto.post.PostDetailResponseDto;
 import com.myproject.myweb.dto.post.PostRequestDto;
-import com.myproject.myweb.dto.post.query.PostQueryDto;
-import com.myproject.myweb.dto.post.query.admin.PostAdminMatchDto;
+import com.myproject.myweb.dto.post.query.admin.PostAdminDto;
 import com.myproject.myweb.dto.user.UserResponseDto;
-import com.myproject.myweb.exception.ArgumentException;
-import com.myproject.myweb.repository.like.LikeRepository;
 import com.myproject.myweb.dto.post.query.PostByLikeCountQueryDto;
 import com.myproject.myweb.repository.post.PostRepository;
 import com.myproject.myweb.repository.post.query.PostQuerydslRepository;
 import com.myproject.myweb.service.PostService;
-import com.myproject.myweb.dto.post.PostResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 public class PostApiController {
     private final PostRepository postRepository;
     private final PostQuerydslRepository postQuerydslRepository;
     private final PostService postService;
-    private final LikeRepository likeRepository;
 
     private List<PostListDto> toPostListDtos(List<Post> entity) {
         return entity.stream()
@@ -184,8 +179,14 @@ public class PostApiController {
         return postQuerydslRepository.findAllPostsByLike(cateId, false, -1);
     }
 
-    @GetMapping("/api/v1/posts/admin/matching")
-    public List<PostAdminMatchDto> postAdminMatch(){
-        return postService.postMatchingAdmin();
+    @GetMapping("/api/v1/posts/admin/matching") // 미사용 api
+    public List<PostAdminDto> postAdminMatch(){
+        List<PostAdminDto> postAdminDtos = new ArrayList<>();
+        try{
+            postAdminDtos = postService.postMatchingAdmin();
+        }catch(WebClientResponseException e){
+            log.error("<에러> 게시글 관리자 불러오지 못함. 원인 -> " + e.getResponseBodyAsString());
+        }
+        return postAdminDtos;
     }
 }

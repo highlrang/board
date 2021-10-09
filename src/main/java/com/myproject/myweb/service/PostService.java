@@ -4,15 +4,12 @@ import com.myproject.myweb.domain.Category;
 import com.myproject.myweb.domain.Post;
 import com.myproject.myweb.domain.user.Role;
 import com.myproject.myweb.domain.user.User;
-import com.myproject.myweb.dto.like.LikeResponseDto;
 import com.myproject.myweb.dto.post.PostDetailResponseDto;
-import com.myproject.myweb.dto.post.query.admin.BestPostAdminDto;
-import com.myproject.myweb.dto.post.query.admin.PostAdminMatchDto;
+import com.myproject.myweb.dto.post.query.admin.PostAdminDto;
 import com.myproject.myweb.dto.post.query.PostByLikeCountQueryDto;
 import com.myproject.myweb.dto.user.UserResponseDto;
 import com.myproject.myweb.exception.ArgumentException;
 import com.myproject.myweb.repository.CategoryRepository;
-import com.myproject.myweb.repository.like.LikeRepository;
 import com.myproject.myweb.repository.post.PostRepository;
 import com.myproject.myweb.dto.post.PostRequestDto;
 import com.myproject.myweb.dto.post.PostResponseDto;
@@ -23,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 import java.util.*;
@@ -129,49 +127,40 @@ public class PostService {
 
     }
 
-    public List<PostAdminMatchDto> postMatchingAdmin() {
+    // ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+
+    public List<PostAdminDto> postMatchingAdmin() {
         Map<String, List<Long>> postIds = getPostIdMap();
 
-        List<PostAdminMatchDto> postAdminMatchDtos = getPostAdminMatchDtos();
+        List<PostAdminDto> postAdminDtos = getPostAdminDtos();
 
-        for(PostAdminMatchDto dto: postAdminMatchDtos){
+        for(PostAdminDto dto: postAdminDtos){
             if(postIds.containsKey(dto.getCategory())){
                 dto.addPostIds(postIds.get(dto.getCategory()));
             }
         }
 
-        return postAdminMatchDtos;
+        return postAdminDtos;
 
     }
 
-    private List<PostAdminMatchDto> getPostAdminMatchDtos() {
+    private List<PostAdminDto> getPostAdminDtos() throws WebClientResponseException {
         // @Async public return void, completableFuture & 같은 인스턴스 안의 메서드끼리 호출할때는 비동기 호출이 되지 않는다.
         // 비동기는 async rest template >> return listenablefuture<ResoibseEntity<T>>
 
-        List<BestPostAdminDto> postAdmins = null;
-        try{
-            String url = "http://127.0.0.1:9090/external/api/v1/members/post-admin/best";
-            Mono<BestPostAdminDto[]> response = webClient.mutate()
-                    .baseUrl(url)
-                    .defaultHeader("Content-Type", "application/json")
-                    .defaultHeader("Accept", "application/json")
-                    .build()
-                    .get()
-                    .retrieve()
-                    .bodyToMono(BestPostAdminDto[].class);
+        String url = "http://127.0.0.1:9090/external/api/v1/members/post-admin";
+        Mono<PostAdminDto[]> response = webClient.mutate()
+                .baseUrl(url)
+                .defaultHeader("Content-Type", "application/json")
+                .defaultHeader("Accept", "application/json")
+                .build()
+                .get()
+                .retrieve()
+                .bodyToMono(PostAdminDto[].class);
 
-            postAdmins = Arrays.asList(response.block());
-
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-
-        // BestPostAdminDto > PostAdminMatchDto
-        List<PostAdminMatchDto> postAdminMatchDtos = postAdmins.stream()
-                .map(a -> new PostAdminMatchDto(a.getCategory(), a.getId()))
-                .collect(Collectors.toList());
-
-        return postAdminMatchDtos;
+        List<PostAdminDto> postAdmins = Arrays.asList(response.block());
+        return postAdmins;
     }
 
     private Map<String, List<Long>> getPostIdMap() {

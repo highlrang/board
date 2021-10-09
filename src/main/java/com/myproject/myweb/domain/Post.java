@@ -56,6 +56,13 @@ public class Post extends BaseTimeEntity {
         this.isPublic = isPublic;
     }
 
+    public static Post createPost(String title, String content, Boolean isPublic, Category category, User writer){
+        Post post = Post.builder().title(title).content(content).isPublic(isPublic).build();
+        post.addCategory(category);
+        post.addWriter(writer);
+        return post;
+    }
+
     public void addCategory(Category category){
         this.category = category;
     }

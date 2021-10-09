@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <header th:fragment="headerFragment">
-    <script>
+    <script th:inline="javascript">
         $(document).ready(function(){
             $("#cate-list").click();
         });

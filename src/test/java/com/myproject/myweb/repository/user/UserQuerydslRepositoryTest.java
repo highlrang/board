@@ -19,26 +19,7 @@ public class UserQuerydslRepositoryTest {
     UserQuerydslRepository userQuerydslRepository;
 
     @Test
-    public void 쿼리비교(){
-
-      log.info("------------------생쿼리 시작-------------------------------");
-      userQuerydslRepository.findAllByMap();
-      log.info("------------------생쿼리 완료-------------------------------");
-
-      log.info("------------------fetch쿼리 시작----------------------------");
-      userQuerydslRepository.findAllByFetch();
-      log.info("------------------fetch쿼리 완료----------------------------");
-
-      log.info("------------------in쿼리 시작-------------------------------");
-      userQuerydslRepository.findAllInQeury();
-      log.info("------------------in쿼리 완료-------------------------------");
-
-
-    }
-
-    @Test
-    public void 쿼리확인(){
-        userQuerydslRepository.findAllWritersByLikeCount(5L);
+    public void 쿼리비교() {
     }
 
 }
