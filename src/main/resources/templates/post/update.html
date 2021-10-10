@@ -11,6 +11,11 @@
 <div layout:fragment="content">
     <script>
         $(document).ready(function(){
+            if($('#isPublic').is(':checked') == true){
+                $('#isPublic').val(true);
+            }else{
+                $('#isPublic').val(false);
+            }
 
             $(document).on('click', '#isPublic', function(){
                 if($('#isPublic').is(':checked') == true){
@@ -31,7 +36,7 @@
         </div>
 
         <div class="mb-3 form-check">
-            <input class="form-check-input" type="checkbox" id="isPublic" value="true" th:checked="${post.isPublic == true}">
+            <input class="form-check-input" type="checkbox" id="isPublic" th:checked="${post.isPublic == true}">
             <label class="form-check-label" for="isPublic">
                 공개 여부
             </label>

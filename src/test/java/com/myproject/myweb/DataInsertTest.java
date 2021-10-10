@@ -75,13 +75,13 @@ public class DataInsertTest {
         // 142 best글 + 상세페이지 좋아요와 채택 캡쳐 (126 - 식물)
         // 143 비공개게시글 + 수정 화면 캡쳐 + 미채택 미공개 상세캡쳐 (127 - 일기)
 
-        Post post = postRepository.findById(141l).get();
+        Post post = postRepository.findById(139l).get();
         List<Like> likes = new ArrayList<>();
 
-        User user = userRepository.findByEmail("anything@naver.com").get();
-        likes.add(Like.builder().post(post).user(user).build());
+        // User user = userRepository.findByEmail("anything@naver.com").get();
+        // likes.add(Like.builder().post(post).user(user).build());
 
-        user = userRepository.findByEmail("joah@naver.com").get();
+        User user = userRepository.findByEmail("joah@naver.com").get();
         likes.add(Like.builder().post(post).user(user).build());
 
         user = userRepository.findByEmail("spring@naver.com").get();
@@ -95,6 +95,8 @@ public class DataInsertTest {
 
         user = userRepository.findByEmail("jhw125@naver.com").get();
         likes.add(Like.builder().post(post).user(user).build());
+
+        likeRepository.saveAll(likes);
     }
 
     @Test

@@ -45,67 +45,48 @@
         <input type="hidden" id="alreadyLiked" th:value="${alreadyLiked}">
     </div>
 
-    <div class="input-group mb-3">
-        <span class="input-group-text" id="c">카테고리</span>
-        <input type="text" th:value="${post.categoryName}" class="form-control" aria-label="Sizing example input" aria-describedby="c" readonly>
-    </div>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item" th:text="|${post.categoryName} 게시판|"></li>
+        <li class="list-group-item" th:text="${post.title}"></li>
+        <li class="list-group-item" th:text="${post.writerName}"></li>
 
-    <div class="input-group mb-3">
-        <span class="input-group-text">제목</span>
-        <input type="text" th:value="${post.title}" class="form-control" readonly>
-    </div>
+        <li class="list-group-item" style="white-space:pre" th:text="${post.content}"></li>
 
-    <div class="input-group mb-3">
-        <span class="input-group-text">작성자</span>
-        <input type="text" th:value="${post.writerName}" class="form-control" readonly>
-    </div>
+        <li class="list-group-item" th:if="${post.isComplete == true}">
+            <div class="badge bg-dark text-light text-wrap" style="width: 8rem;">채택 게시글</div>
+        </li>
+        <li class="list-group-item" th:if="${post.isComplete == false}">
+            <div class="badge bg-light text-wrap" style="width: 8rem;">미채택 게시글</div>
+        </li>
 
-    <div class="input-group mb-3">
-        <span class="input-group-text">내용</span>
-        <textarea class="form-control" th:text="${post.content}" aria-label="With textarea" readonly></textarea>
-    </div>
-
-    <div th:if='${post.isComplete == true }'>
-        <div class="badge bg-dark text-light text-wrap" style="width: 8rem;">
-            해결완료
-        </div>
-    </div>
-    <div th:if='${post.isComplete == false }'>
-        <div class="badge bg-light text-wrap" style="width: 8rem;">
-            미해결 상태
-        </div>
-    </div>
-
-    <div th:if="${myPost == true}">
-        <div th:if='${post.isPublic == true }'>
-            <div class="badge bg-light text-wrap" style="width: 8rem;">
+        <li class="list-group-item" th:if="${myPost == true}">
+            <div th:if="${post.isPublic == true}" class="badge bg-light text-wrap" style="width: 8rem;">
                 공개 게시글
             </div>
-        </div>
-        <div th:if='${post.isPublic == false }'>
-            <div class="badge bg-dark text-light text-wrap" style="width: 8rem;">
+            <div th:if="${post.isPublic == false}" class="badge bg-dark text-light text-wrap" style="width: 8rem;">
                 비공개 게시글
             </div>
-        </div>
-        <div>
+        </li>
+        <li class="list-group-item" th:if="${myPost == true}">
             <a class="btn btn-light" th:href="@{/post/update/{id}(id=${post.id})}">수정</a>
-            <input type="button" class="btn btn-light" id="post-delete" value="삭제"/>
-        </div>
-    </div>
-    <div th:unless="${myPost == true}">
-        <div>
-            <input type="button" id="like-push" value="좋아요"/>
-        </div>
-    </div>
+            <input type="button" class="btn btn-light" id="post-delete" value="삭제">
+        </li>
 
-    <div class="badge bg-danger text-light text-wrap" style="width: 8rem;">
-        <span th:text='|게시글 좋아요 - ${post.totalLike} 개|' onclick="clickLikeList()"></span>
-    </div>
-    <div id="likes" style="display:none;">
-        <div th:each="like : ${post.likes}">
-            <a class="badge bg-light text-dark" th:text="${like.userName}" href="#"></a>
-        </div>
-    </div>
+        <li class="list-group-item" th:unless="${myPost == true}">
+            <input type="button" id="like-push" value="좋아요">
+        </li>
+
+        <li class="list-group-item" th:if="${post.isPublic == true}">
+            <div class="badge bg-danger text-light text-wrap" style="width: 8rem;">
+                <span th:text="|좋아요 ${post.totalLike}개|" onclick="clickLikeList()"></span>
+            </div>
+            <div id="likes" style="display: none">
+                <div th:each="like : ${post.likes}">
+                    <a class="badge bg-light text-dark" th:text="${like.userName}" href="#"></a>
+                </div>
+            </div>
+        </li>
+    </ul>
 </div>
 </body>
 </html>
