@@ -42,9 +42,7 @@ public class PostQuerydslRepository {
                 .offset(offset)
                 .limit(10)
                 .fetch();
-
         return fetch;
-
     }
 
     // bestlist all or paging
@@ -81,22 +79,18 @@ public class PostQuerydslRepository {
      */
 
     public Long countBestPosts(Long cateId){
-        List<Post> fetch = jpaQueryFactory.selectFrom(post)
-                .innerJoin(post.category, category)
-                .fetchJoin()
+        return (long) jpaQueryFactory.selectFrom(post)
+                .innerJoin(post.category, category) // count 뽑기에 fetch join 필요없음
                 .innerJoin(post.likeList, like)
-                .fetchJoin()
                 .where(eqCategoryId(cateId))
                 .groupBy(like.post)
                 .having(like.count().goe(5))
-                .fetch();
-
-        return (long) fetch.size();
+                .fetch()
+                .size();
     }
 
     private BooleanExpression eqCategoryId(Long cateId){
         if(cateId == null) return null;
-
         return category.id.eq(cateId);
     }
 

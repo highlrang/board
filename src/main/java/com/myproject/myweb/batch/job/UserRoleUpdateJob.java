@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import javax.persistence.EntityManagerFactory;
+import java.util.HashMap;
+import java.util.Map;
 
 // querydsl이 아닌 JPA용으로
 // Reader > JpaCursorItemReader, JpaPagingItemReader이 있고
@@ -60,22 +62,24 @@ public class UserRoleUpdateJob {
 
     @Bean // batch 4.3 JpaCursorItemReader
     public JpaPagingItemReader<User> itemReader() {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("role", Role.NORMAL_USER);
         return new JpaPagingItemReaderBuilder<User>()
                 .name("jpaCursorItemReader")
                 .entityManagerFactory(entityManagerFactory)
                 .queryString("select w" +
                         " from Like l" +
-                        " join fetch l.post p" +
-                        " join fetch p.writer w" +
-                        " where w.role = NORMAL_USER" + // 되는지 확인
+                        " join l.post p" +
+                        " join p.writer w" +
+                        " where w.role =:role" +
                         " group by l.post.writer" +
                         " having count(l.post.writer) >= 100" +
                         " order by count(l.post.writer) desc")
-                        // group by는 필요치 않은 정렬 수행함
-                        // index 컬럼이면 성능에 영향 끼치지 않지만
-                        // 정렬 필요없는 경우라면 order by null을 통해 정렬 효과 제거해야함
-                // .parameterValues()
+                .parameterValues(parameters)
                 .build();
+        // group by는 필요치 않은 정렬 수행함
+        // index 컬럼이면 성능에 영향 끼치지 않지만
+        // 정렬 필요없는 경우라면 order by null을 통해 정렬 효과 제거해야함
     }
 
     @Bean

@@ -3,6 +3,7 @@ package com.myproject.myweb;
 import com.myproject.myweb.domain.Category;
 import com.myproject.myweb.domain.Like;
 import com.myproject.myweb.domain.Post;
+import com.myproject.myweb.domain.user.Role;
 import com.myproject.myweb.domain.user.User;
 import com.myproject.myweb.dto.post.query.PostByLikeCountQueryDto;
 import com.myproject.myweb.dto.user.UserRequestDto;
@@ -13,6 +14,7 @@ import com.myproject.myweb.repository.post.query.PostQueryRepository;
 import com.myproject.myweb.repository.post.query.PostQuerydslRepository;
 import com.myproject.myweb.repository.user.UserRepository;
 import com.myproject.myweb.service.UserService;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +24,13 @@ import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.myproject.myweb.domain.QCategory.category;
+import static com.myproject.myweb.domain.QLike.like;
+import static com.myproject.myweb.domain.QPost.post;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -37,6 +43,25 @@ public class DataInsertTest {
     @Autowired PostRepository postRepository;
     @Autowired PostQuerydslRepository postQuerydslRepository;
     @Autowired LikeRepository likeRepository;
+    @Autowired EntityManager em;
+    @Autowired JPAQueryFactory jpaQueryFactory;
+
+    @Test
+    public void querydsl(){
+        Category cate = em.createQuery("select c From Category c", Category.class)
+                .getResultList().get(0);
+
+        jpaQueryFactory.selectFrom(post)
+                .innerJoin(post.category, category)
+                .fetchJoin()
+                .innerJoin(post.likeList, like)
+                .fetchJoin()
+                .where(category.id.eq(cate.getId()))
+                .groupBy(like.post)
+                .having(like.count().goe(5))
+                .fetch()
+                .size();
+    }
 
     @Test // @Commit
     public void 카테고리(){

@@ -39,15 +39,14 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class) // RunWith하면 init 안 해도됨?
+@ExtendWith(MockitoExtension.class)
 public class PostServiceMockUnitTest {
 
     @Mock private PostRepository postRepository;
     @Mock private PostQuerydslRepository postQuerydslRepository;
     @Mock private UserRepository userRepository;
     @Mock private CategoryRepository categoryRepository;
-    @Mock private LikeRepository likeRepository;
-    @Mock private RestTemplate restTemplate;
+
     @InjectMocks private PostService postService;
 
     @Before

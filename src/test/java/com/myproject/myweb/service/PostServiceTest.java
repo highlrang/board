@@ -31,12 +31,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@Transactional // 또는 AfterEach로 clear하기
 public class PostServiceTest {
 
-    // repository nullpointerexception 남 (impl은 에러 안 나는 듯)
     @Autowired PostRepository postRepository;
-    @Autowired PostService postService;            // 단위에서는 new로 ??
+    @Autowired PostService postService;
     @Autowired UserRepository userRepository;
     @Autowired CategoryRepository categoryRepository;
 
