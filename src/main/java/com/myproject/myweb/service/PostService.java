@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -133,34 +133,32 @@ public class PostService {
     public List<PostAdminDto> postMatchingAdmin() {
         Map<String, List<Long>> postIds = getPostIdMap();
 
-        List<PostAdminDto> postAdminDtos = getPostAdminDtos();
-
-        for(PostAdminDto dto: postAdminDtos){
+        Flux<PostAdminDto> postAdminDtos = getPostAdminDtos();
+        return postAdminDtos.toStream().map(dto -> {
             if(postIds.containsKey(dto.getCategory())){
                 dto.addPostIds(postIds.get(dto.getCategory()));
             }
-        }
-
-        return postAdminDtos;
+            return dto;
+        }).collect(Collectors.toList());
 
     }
 
-    private List<PostAdminDto> getPostAdminDtos() throws WebClientResponseException {
+    private Flux<PostAdminDto> getPostAdminDtos() throws WebClientResponseException {
         // @Async public return void, completableFuture & 같은 인스턴스 안의 메서드끼리 호출할때는 비동기 호출이 되지 않는다.
         // 비동기는 async rest template >> return listenablefuture<ResoibseEntity<T>>
 
         String url = "http://127.0.0.1:9090/external/api/v1/members/post-admin";
-        Mono<PostAdminDto[]> response = webClient.mutate()
+        Flux<PostAdminDto> response = webClient.mutate()
                 .baseUrl(url)
                 .defaultHeader("Content-Type", "application/json")
                 .defaultHeader("Accept", "application/json")
                 .build()
                 .get()
                 .retrieve()
-                .bodyToMono(PostAdminDto[].class);
+                .bodyToFlux(PostAdminDto.class);
 
-        List<PostAdminDto> postAdmins = Arrays.asList(response.block());
-        return postAdmins;
+        response.subscribe(System.out::println);
+        return response;
     }
 
     private Map<String, List<Long>> getPostIdMap() {
