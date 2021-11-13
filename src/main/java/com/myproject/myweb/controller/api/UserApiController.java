@@ -12,16 +12,21 @@ import com.myproject.myweb.repository.like.query.LikeQuerydslRepository;
 import com.myproject.myweb.repository.user.UserRepository;
 import com.myproject.myweb.repository.user.query.UserQueryRepository;
 import com.myproject.myweb.repository.user.query.UserQuerydslRepository;
+import com.myproject.myweb.security.JwtTokenProvider;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -32,6 +37,25 @@ public class UserApiController {
     private final UserRepository userRepository;
     private final LikeQuerydslRepository likeQuerydslRepository;
     private final LikeRepository likeRepository;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    @PostMapping("/login")
+    public String login(HttpServletResponse response, @RequestBody Map<String, String> request) {
+        User user = userRepository.findByEmail(request.get("email"))
+                .orElseThrow(() -> new IllegalArgumentException("UserNotFoundException"));
+        if(!passwordEncoder.matches(request.get("password"), user.getPassword())){
+            throw new IllegalArgumentException("UserNotMatchedException");
+        }
+
+        String jwt = jwtTokenProvider.createToken(user.getEmail(), Arrays.asList(user.getRole().getTitle()));
+        Cookie cookie = new Cookie("token", jwt);
+        cookie.setPath("/");
+        cookie.setMaxAge(60 * 60);
+        response.addCookie(cookie);
+
+        return "login-success";
+    }
 
     @GetMapping("/api/v1/users")
     public List<UserListDto> usersV1(){
@@ -171,9 +195,15 @@ public class UserApiController {
 
     }
 
+    @GetMapping("/api/v1/user")
+    public ResponseEntity userByCookie(HttpServletRequest request){
+        String token = jwtTokenProvider.resolveToken(request);
+        if(!jwtTokenProvider.validateToken(token)) return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<String>(HttpStatus.OK); // jwtTokenProvider.getAuthentication(token));
+    }
 
     @GetMapping("/api/v1/users/{id}")
-    public UserDto usersByIdV1(@PathVariable(value = "id") Long id){
+    public UserDto userByIdV1(@PathVariable(value = "id") Long id){
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("UserNotFoundException"));
         Long likeCount = likeRepository.countAllByPost_Writer(user);

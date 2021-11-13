@@ -26,17 +26,6 @@ public class HomeController {
         return "home";
     }
 
-    @GetMapping("/login")
-    public String loginForm(){
-        return "user/login";
-    }
-
-    @GetMapping("/logout")
-    public String logout(HttpSession session){
-        session.invalidate();
-        return "redirect:/";
-    }
-
     @GetMapping("/register")
     public String registerForm(@ModelAttribute UserRequestDto userRequestDto){
         return "user/register";
