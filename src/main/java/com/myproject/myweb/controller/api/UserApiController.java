@@ -15,6 +15,7 @@ import com.myproject.myweb.repository.user.query.UserQuerydslRepository;
 import com.myproject.myweb.security.JwtTokenProvider;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -29,6 +30,7 @@ import java.net.URLEncoder;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class UserApiController {
@@ -41,17 +43,18 @@ public class UserApiController {
     private final BCryptPasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
-    public String login(HttpServletResponse response, @RequestBody Map<String, String> request) {
-        User user = userRepository.findByEmail(request.get("email"))
+    public String login(HttpServletResponse response,
+                        @RequestBody Map<String, String> userBody) {
+        User user = userRepository.findByEmail(userBody.get("email"))
                 .orElseThrow(() -> new IllegalArgumentException("UserNotFoundException"));
-        if(!passwordEncoder.matches(request.get("password"), user.getPassword())){
+        if(!passwordEncoder.matches(userBody.get("password"), user.getPassword())){
             throw new IllegalArgumentException("UserNotMatchedException");
         }
 
         String jwt = jwtTokenProvider.createToken(user.getEmail(), Arrays.asList(user.getRole().getTitle()));
         Cookie cookie = new Cookie("token", jwt);
         cookie.setPath("/");
-        cookie.setMaxAge(60 * 60);
+        cookie.setMaxAge(60 * 60 * 24 * 7);
         response.addCookie(cookie);
 
         return "login-success";
@@ -196,10 +199,10 @@ public class UserApiController {
     }
 
     @GetMapping("/api/v1/user")
-    public ResponseEntity userByCookie(HttpServletRequest request){
+    public ResponseEntity<String> userByCookie(HttpServletRequest request){
         String token = jwtTokenProvider.resolveToken(request);
-        if(!jwtTokenProvider.validateToken(token)) return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-        return new ResponseEntity<String>(HttpStatus.OK); // jwtTokenProvider.getAuthentication(token));
+        if(!jwtTokenProvider.validateToken(token)) return new ResponseEntity<>("UserTokenFail", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(jwtTokenProvider.getUserPk(token), HttpStatus.OK);
     }
 
     @GetMapping("/api/v1/users/{id}")
